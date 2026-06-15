@@ -29,7 +29,7 @@ setuptools.setup(
         "License :: MIT",
         "Operating System :: OS Independent",
     ],
-    python_requires=">=3.10.0",
+    python_requires=">=3.8.0",
     install_requires=[
         "sentry_sdk",
         "colorama",

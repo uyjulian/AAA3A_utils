@@ -1,7 +1,7 @@
 [tool.ruff]
 line-length = 100
 indent-width = 4
-target-version = "py310"
+target-version = "py38"
 exclude = [
     ".bzr",
     ".direnv",
