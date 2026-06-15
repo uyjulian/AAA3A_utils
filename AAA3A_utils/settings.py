@@ -42,7 +42,7 @@ def dashboard_page(*args, **kwargs):
 def no_colour_rich_markup(
     *objects: typing.Any,
     lang: str = "",
-    no_box: bool | None = False,
+    no_box: bool = False,
 ) -> str:
     """
     Slimmed down version of rich_markup which ensure no colours (/ANSI) can exist
@@ -164,7 +164,7 @@ class CustomMessageConverter(commands.Converter, dict):
     async def send_message(
         self,
         ctx: commands.Context,
-        channel: discord.abc.Messageable | None = None,
+        channel: discord.abc.Messageable = None,
         **kwargs,
     ):
         if channel is None:
@@ -268,10 +268,10 @@ class CustomMessageConverter(commands.Converter, dict):
     def values(self):
         return self.__dict__.values()
 
-    def get(self, key: str, _default: typing.Any | None = None) -> typing.Any:
+    def get(self, key: str, _default: typing.Any = None) -> typing.Any:
         return self.__dict__.get(key, _default)
 
-    def pop(self, key: str, _default: typing.Any | None = None) -> typing.Any:
+    def pop(self, key: str, _default: typing.Any = None) -> typing.Any:
         return self.__dict__.pop(key, _default)
 
     def popitem(self) -> typing.Any:
@@ -294,9 +294,9 @@ class Settings:
         group: str,
         settings: dict[str, dict[str, typing.Any]],
         global_path: list = None,
-        use_profiles_system: bool | None = False,
+        use_profiles_system: bool = False,
         can_edit: bool = True,
-        commands_group: commands.Group | commands.HybridGroup | str | None = None,
+        commands_group: commands.Group | commands.HybridGroup | str = None,
     ) -> None:
         if global_path is None:
             global_path = []
@@ -355,7 +355,7 @@ class Settings:
                 settings[setting]["style"] = discord.TextStyle(settings[setting]["style"])
         self.settings: dict[str, dict[str, typing.Any]] = settings
 
-    async def add_commands(self, force: bool | None = False) -> None:
+    async def add_commands(self, force: bool = False) -> None:
         if not isinstance(self.commands_group, commands.Group):
             name = "set" + (
                 self.commands_group
@@ -432,7 +432,7 @@ class Settings:
             async def show_settings(
                 _self,
                 ctx: commands.Context,
-                with_dev: bool | None = False,
+                with_dev: bool = False,
             ):
                 """Show all settings for the cog with defaults and values."""
                 await self.show_settings(ctx, with_dev=with_dev)
@@ -440,7 +440,7 @@ class Settings:
             async def modal_config(
                 _self,
                 ctx: commands.Context,
-                confirmation: bool | None = False,
+                confirmation: bool = False,
             ):
                 """Set all settings for the cog with a Discord Modal."""
                 await self.send_modal(ctx, confirmation=confirmation)
@@ -471,7 +471,7 @@ class Settings:
                 _self,
                 ctx: commands.Context,
                 profile: ProfileConverter,
-                with_dev: bool | None = False,
+                with_dev: bool = False,
             ):
                 """Show all settings for the cog with defaults and values."""
                 await self.show_settings(ctx, profile=profile, with_dev=with_dev)
@@ -480,7 +480,7 @@ class Settings:
                 _self,
                 ctx: commands.Context,
                 profile: ProfileConverter,
-                confirmation: bool | None = False,
+                confirmation: bool = False,
             ):
                 """Set all settings for the cog with a Discord Modal."""
                 await self.send_modal(ctx, profile=profile, confirmation=confirmation)
@@ -502,7 +502,7 @@ class Settings:
                 _self,
                 ctx: commands.Context,
                 profile: ProfileConverter,
-                confirmation: bool | None = False,
+                confirmation: bool = False,
             ):
                 """Remove an existing profile."""
                 await self.remove_profile(ctx, profile=profile, confirmation=confirmation)
@@ -687,15 +687,15 @@ class Settings:
     async def command(
         self,
         ctx: commands.Context,
-        key: str | None = None,
-        value: typing.Any | None = None,
+        key: str = None,
+        value: typing.Any = None,
         _object: discord.Guild
         | discord.Member
         | discord.abc.Messageable
         | discord.Role
         | discord.User
-        | None = None,
-        profile: str | None = None,
+        = None,
+        profile: str = None,
     ) -> None:
         if key is None:
             for setting in self.settings:
@@ -775,7 +775,7 @@ class Settings:
         self,
         ctx: commands.Context,
         profile: str,
-        confirmation: bool | None = False,
+        confirmation: bool = False,
     ) -> None:
         if not confirmation:
             embed: discord.Embed = discord.Embed()
@@ -865,9 +865,9 @@ class Settings:
         | discord.abc.Messageable
         | discord.Role
         | discord.User
-        | None = None,
-        profile: str | None = None,
-        with_dev: bool | None = False,
+        = None,
+        profile: str = None,
+        with_dev: bool = False,
     ) -> None:
         if _object is None:
             if self.group == Config.GLOBAL:
@@ -944,9 +944,9 @@ class Settings:
         | discord.abc.Messageable
         | discord.Role
         | discord.User
-        | None = None,
-        profile: str | None = None,
-        confirmation: bool | None = False,
+        = None,
+        profile: str = None,
+        confirmation: bool = False,
     ) -> None:
         if _object is None:
             if self.group == Config.GLOBAL:
@@ -1536,8 +1536,8 @@ class Settings:
         | discord.abc.Messageable
         | discord.Role
         | discord.User
-        | None = None,
-        profile: str | None = None,
+        = None,
+        profile: str = None,
     ) -> typing.Any:
         if key not in self.settings:
             raise KeyError(key)
@@ -1564,8 +1564,8 @@ class Settings:
         | discord.abc.Messageable
         | discord.Role
         | discord.User
-        | None = None,
-        profile: str | None = None,
+        = None,
+        profile: str = None,
     ) -> None:
         if key not in self.settings:
             raise KeyError(key)
@@ -1592,8 +1592,8 @@ class Settings:
         | discord.abc.Messageable
         | discord.Role
         | discord.User
-        | None = None,
-        profile: str | None = None,
+        = None,
+        profile: str = None,
     ) -> None:
         if key not in self.settings:
             raise KeyError(key)
@@ -1622,8 +1622,8 @@ class Settings:
         | discord.abc.Messageable
         | discord.Role
         | discord.User
-        | None = None,
-        ctx: commands.Context | None = None,
+        = None,
+        ctx: commands.Context = None,
     ) -> redbot.core.config.Group:
         if _object is None and ctx is not None:
             if self.group == Config.GLOBAL:
@@ -1675,8 +1675,8 @@ class Settings:
         | discord.abc.Messageable
         | discord.Role
         | discord.User
-        | None = None,
-        profile: str | None = None,
+        = None,
+        profile: str = None,
     ) -> dict[str, dict[str, typing.Any]]:
         result = {}
         data = self.get_data(_object)

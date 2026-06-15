@@ -36,13 +36,13 @@ class Menu(discord.ui.View):
     def __init__(
         self,
         pages: list[dict[str, str | typing.Any] | discord.Embed | str],
-        timeout: int | None = 180,
-        delete_after_timeout: bool | None = False,
-        page_start: int | None = 0,
-        members: typing.Iterable[discord.Member | int] | None = None,
-        ephemeral: bool | None = False,
-        prefix: str | None = None,
-        lang: str | None = None,
+        timeout: int = 180,
+        delete_after_timeout: bool = False,
+        page_start: int = 0,
+        members: typing.Iterable[discord.Member | int] = None,
+        ephemeral: bool = False,
+        prefix: str = None,
+        lang: str = None,
     ) -> None:
         if members is None:
             members = []
@@ -63,13 +63,13 @@ class Menu(discord.ui.View):
         }
         self.controls: dict[str, str] = controls.copy()
         self.extra_items: list[discord.ui.Item] = []
-        self.members: list[int] | None = (
+        self.members: list[int] = (
             members if members is None else [getattr(member, "id", member) for member in members]
         )
         self.ephemeral: bool = ephemeral
         if not self.pages:
             self.pages: list[str] = ["Nothing to show."]
-        self.prefix: str | None = prefix
+        self.prefix: str = prefix
         if self.prefix is not None and not self.prefix.startswith("```"):
             self.prefix = box(self.prefix, lang="py")
         if isinstance(self.pages, str):
@@ -80,7 +80,7 @@ class Menu(discord.ui.View):
                     + (len(f"{self.prefix}\n") if self.prefix is not None else 0),
                 ),
             )
-        self.lang: str | None = lang
+        self.lang: str = lang
         if (self.prefix is not None or lang is not None) and all(
             isinstance(page, str) for page in self.pages
         ):
@@ -221,7 +221,7 @@ class Menu(discord.ui.View):
             return current, {"embed": value, "content": None}
         return None
 
-    async def change_page(self, interaction: discord.Interaction | None = None) -> None:
+    async def change_page(self, interaction: discord.Interaction = None) -> None:
         if interaction is not None:
             try:
                 await interaction.response.defer()
@@ -428,14 +428,14 @@ class Reactions:
         self,
         bot: Red,
         message: discord.Message,
-        remove_reaction: bool | None = True,
-        timeout: int | None = 180,
-        reactions: list | None = None,
-        members: typing.Iterable[discord.Member | int] | None = None,
-        check: typing.Callable | None = None,
-        function: typing.Callable | None = None,
-        function_args: dict | None = None,
-        infinity: bool | None = False,
+        remove_reaction: bool = True,
+        timeout: int = 180,
+        reactions: list = None,
+        members: typing.Iterable[discord.Member | int] = None,
+        check: typing.Callable = None,
+        function: typing.Callable = None,
+        function_args: dict = None,
+        infinity: bool = False,
     ) -> None:
         if reactions is None:
             reactions = ["✅", "❌"]
@@ -458,13 +458,13 @@ class Reactions:
         self.infinity: bool = infinity
         self.reaction_result: str | discord.PartialEmoji = None
         self.user_result: discord.User = None
-        self.function_result: typing.Any | None = None
-        self.members: list[int] | None = (
+        self.function_result: typing.Any = None
+        self.members: list[int] = (
             members if members is None else [getattr(member, "id", member) for member in members]
         )
-        self.check: typing.Callable | None = check
-        self.function: typing.Callable | None = function
-        self.function_args: dict[str, typing.Any] | None = function_args
+        self.check: typing.Callable = check
+        self.function: typing.Callable = function
+        self.function_args: dict[str, typing.Any] = function_args
         self.reactions: list[str] = reactions
         self.r: bool = False
         self.done: asyncio.Event = asyncio.Event()
@@ -472,7 +472,7 @@ class Reactions:
 
     def to_dict_cogsutils(
         self,
-        for_Config: bool | None = False,
+        for_Config: bool = False,
     ) -> dict[str, typing.Any]:
         reactions_dict_instance = self.reactions_dict_instance
         if for_Config:
@@ -551,7 +551,7 @@ class Reactions:
     ) -> tuple[
         discord.PartialEmoji | str,
         discord.User,
-        typing.Any | None,
+        typing.Any,
     ]:
         self.done = asyncio.Event()
         await self.done.wait()
@@ -566,6 +566,6 @@ class Reactions:
     ) -> tuple[
         discord.PartialEmoji | str,
         discord.User,
-        typing.Any | None,
+        typing.Any,
     ]:
         return self.reaction_result, self.user_result, self.function_result

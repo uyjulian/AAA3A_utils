@@ -123,7 +123,7 @@ class Cog(commands.Cog):
             list[
                 dict[
                     str,
-                    datetime.datetime | int | str | tuple[typing.Any] | None,
+                    datetime.datetime | int | str | tuple[typing.Any],
                 ]
             ],
         ] = {}

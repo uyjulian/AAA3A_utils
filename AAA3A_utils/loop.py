@@ -26,7 +26,7 @@ def _(untranslated: str) -> str:
 def no_colour_rich_markup(
     *objects: typing.Any,
     lang: str = "",
-    no_box: bool | None = False,
+    no_box: bool = False,
 ) -> str:
     """
     Slimmed down version of rich_markup which ensures no colours (/ANSI) can exist.
@@ -57,11 +57,11 @@ class Loop:
         hours: int = 0,
         minutes: int = 0,
         seconds: int = 0,
-        function_kwargs: dict[str, typing.Any] | None = None,
+        function_kwargs: dict[str, typing.Any] = None,
         wait_raw: bool = False,
-        limit_count: int | None = None,
-        limit_date: datetime.datetime | None = None,
-        limit_exception: int | None = None,
+        limit_count: int = None,
+        limit_date: datetime.datetime = None,
+        limit_exception: int = None,
         start_now: bool = True,
     ) -> None:
         self.cog: commands.Cog = cog
@@ -75,25 +75,25 @@ class Loop:
             seconds=seconds,
         ).total_seconds()
         self.wait_raw: bool = wait_raw
-        self.limit_count: int | None = limit_count
-        self.limit_date: datetime.datetime | None = limit_date
-        self.limit_exception: int | None = limit_exception
+        self.limit_count: int = limit_count
+        self.limit_date: datetime.datetime = limit_date
+        self.limit_exception: int = limit_exception
         self.stop_manually: bool = False
 
         self.start_datetime: datetime.datetime = datetime.datetime.now(tz=datetime.timezone.utc)
         self.expected_interval: datetime.timedelta = datetime.timedelta(seconds=self.interval)
-        self.last_iteration: datetime.datetime | None = None
-        self.next_iteration: datetime.datetime | None = None
+        self.last_iteration: datetime.datetime = None
+        self.next_iteration: datetime.datetime = None
         self.currently_running: bool = False
         self.iteration_count: int = 0
         self.last_result: typing.Any = None
-        self.last_iteration_duration: float | None = None
+        self.last_iteration_duration: float = None
         self.iteration_exception: int = 0
         self.last_exc: str = "No exception has occurred yet."
-        self.last_exc_raw: BaseException | None = None
+        self.last_exc_raw: BaseException = None
         self.stop: bool = False
 
-        self.task: asyncio.Task | None = None
+        self.task: asyncio.Task = None
         if start_now:
             self.start()
 

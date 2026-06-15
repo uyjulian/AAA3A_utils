@@ -47,7 +47,7 @@ def _(untranslated: str) -> str:
 def no_colour_rich_markup(
     *objects: typing.Any,
     lang: str = "",
-    no_box: bool | None = False,
+    no_box: bool = False,
 ) -> str:
     """
     Slimmed down version of rich_markup which ensure no colours (/ANSI) can exist
@@ -422,12 +422,12 @@ class SharedCog(Cog, name="AAA3A_utils"):
     async def getallfor(
         self,
         ctx: commands.Context,
-        all: typing.Literal["all", "ALL"] | None = None,
-        page: int | None = None,
+        all: typing.Literal["all", "ALL"] = None,
+        page: int = None,
         repo: str = None,
-        check_updates: bool | None = False,
-        cog: InstalledCog | None = None,
-        command: str | None = None,
+        check_updates: bool = False,
+        cog: InstalledCog = None,
+        command: str = None,
     ) -> None:
         """Get all the necessary information to get support on a bot/repo/cog/command.
         With a html file.

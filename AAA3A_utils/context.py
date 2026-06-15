@@ -34,7 +34,7 @@ __all__ = ["Context"]
 
 def is_dev(
     bot: Red,
-    user: discord.User | discord.Member | discord.Object | int | None = None,
+    user: discord.User | discord.Member | discord.Object | int = None,
 ) -> bool:
     developers_ids = [829612600059887649]
     Sudo = bot.get_cog("Sudo")
@@ -78,8 +78,8 @@ class Context:
     async def tick(
         self,
         *,
-        message: str | None = None,
-        reaction: str | None = (
+        message: str = None,
+        reaction: str = (
             commands.context.TICK
             if not hasattr(commands.context, "MORE_TICKS")
             else random.choice(list(commands.context.MORE_TICKS))

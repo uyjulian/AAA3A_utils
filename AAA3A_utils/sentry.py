@@ -105,13 +105,13 @@ class SentryHelper:
         self.sentry_enabled: bool = None
         self.display_sentry_manual_command: bool = None
         self.send_reminders: bool = True
-        self.uuid: str | None = None
+        self.uuid: str = None
         self.hubs: dict[str, sentry_sdk.Hub] = {}
 
         self.config: Config = cog.config
         self.sentry_global: dict[
             str,
-            dict[str, int | bool | str | None | list[str]],
+            dict[str, int | bool | str | list[str]],
         ] = {
             "sentry": {
                 "version": 1,
@@ -161,8 +161,8 @@ class SentryHelper:
         self,
         ctx: commands.Context,
         error: commands.CommandError,
-        manually: bool | None = False,
-    ) -> str | bool | None:
+        manually: bool = False,
+    ) -> str | bool:
         try:
             if ctx.cog is None:
                 return None
@@ -200,7 +200,7 @@ class SentryHelper:
             self.cog.logger.error("Sending an error to Sentry failed.", exc_info=e)
             return False
 
-    def remove_sensitive_data(self, event: dict, hint: dict | None = {}) -> dict:
+    def remove_sensitive_data(self, event: dict, hint: dict = {}) -> dict:
         """Remove sensitive data from the event. This should only be used by the Sentry SDK.
         This has two main parts:
         1) Remove any mentions of the bot's token
@@ -305,7 +305,7 @@ class SentryHelper:
     async def get_sentry_hub(
         self,
         cog: commands.Cog,
-        force: bool | None = False,
+        force: bool = False,
     ) -> sentry_sdk.Hub:
         """Get a Sentry Hub and Client for a DSN. Each cog should have it's own hub.
         Returns
