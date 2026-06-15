@@ -61,7 +61,7 @@ class CogsUtils:
         return discord.version_info.major >= 2
 
     @classmethod
-    def replace_var_paths(cls, text: str, reverse: bool | None = False) -> str:
+    def replace_var_paths(cls, text: str, reverse: bool = False) -> str:
         if not reverse:
             if not replacement_var_paths:
                 return text
@@ -107,8 +107,8 @@ class CogsUtils:
     @classmethod
     def get_logger(
         cls,
-        name: str | None = None,
-        cog: commands.Cog | None = None,
+        name: str = None,
+        cog: commands.Cog = None,
     ) -> logging.Logger:
         """
         Get a logger for a provided name or a provided cog.
@@ -277,7 +277,7 @@ class CogsUtils:
         cls,
         bot: Red,
         cog: commands.Cog | str,
-        repo_url: str | None = None,
+        repo_url: str = None,
     ) -> tuple[bool, str, str]:
         cog_name = cog.lower() if isinstance(cog, str) else cog.qualified_name.lower()
         if repo_url is None:
@@ -405,11 +405,11 @@ class CogsUtils:
         cls,
         ctx: commands.Context,
         *args,
-        timeout: int | None = 60,
-        timeout_message: str | None = _("Timed out, please try again"),
-        way: typing.Literal["buttons", "message"] | None = "buttons",  # , "reactions"
-        delete_message: bool | None = True,
-        members_authored: typing.Iterable[discord.Member] | None = [],
+        timeout: int = 60,
+        timeout_message: str = _("Timed out, please try again"),
+        way: typing.Literal["buttons", "message"] = "buttons",  # , "reactions"
+        delete_message: bool = True,
+        members_authored: typing.Iterable[discord.Member] = [],
         **kwargs,
     ) -> bool:
         """
@@ -508,7 +508,7 @@ class CogsUtils:
     async def delete_message(
         cls,
         message: discord.Message,
-        delay: float | None = None,
+        delay: float = None,
     ) -> bool:
         """
         Delete a message, ignoring any exceptions.
@@ -532,12 +532,12 @@ class CogsUtils:
         author: discord.User,
         channel: discord.TextChannel,
         command: str,
-        prefix: str | None = None,
-        message: discord.Message | None = None,
-        dispatch_message: bool | None = False,
-        invoke: bool | None = True,
-        __is_mocked__: bool | None = True,
-        created_at: datetime.datetime | None = None,
+        prefix: str = None,
+        message: discord.Message = None,
+        dispatch_message: bool = False,
+        invoke: bool = True,
+        __is_mocked__: bool = True,
+        created_at: datetime.datetime = None,
         **kwargs,
     ) -> commands.Context | discord.Message:
         """
@@ -765,7 +765,7 @@ class CogsUtils:
     @classmethod
     def get_interval_string(
         cls,
-        expires: datetime.datetime | datetime.timedelta | None,
+        expires: datetime.datetime | datetime.timedelta,
         utc_now: datetime.datetime = None,
         use_timestamp: bool = False,
     ) -> str:
@@ -916,9 +916,9 @@ class CogsUtils:
     @classmethod
     def generate_key(
         cls,
-        length: int | None = 10,
-        existing_keys: list | set | None = None,
-        strings_used: list | None = None,
+        length: int = 10,
+        existing_keys: list | set = None,
+        strings_used: list = None,
     ) -> str:
         """
         Generate a secret key, with the choice of characters, the number of characters and a list of existing keys.
