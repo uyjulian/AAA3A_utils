@@ -309,16 +309,15 @@ class CogsUtils:
             repo_owner, repo_name, repo_branch = repo_url
             repo_branch = repo_branch or repo.branch
         async with aiohttp.ClientSession() as session:
-            async with (
-                session.get(
-                    (
-                        f"https://api.github.com/repos/{repo_owner}/{repo_name}/commits?sha={repo_branch}&path={cog_name}"  # Thanks Jack!
-                        if repo_branch
-                        else f"https://api.github.com/repos/{repo_owner}/{repo_name}/commits?path={cog_name}"
-                    ),  # f"https://api.github.com/repos/{repo_owner}/{repo_name}/git/refs/heads/{repo_branch}" & f"https://api.github.com/repos/{repo_owner}/{repo_name}/contents?path={cog_name}"
-                    timeout=3,
-                ) as r
-            ):
+            xsession = session.get(
+                (
+                    f"https://api.github.com/repos/{repo_owner}/{repo_name}/commits?sha={repo_branch}&path={cog_name}"  # Thanks Jack!
+                    if repo_branch
+                    else f"https://api.github.com/repos/{repo_owner}/{repo_name}/commits?path={cog_name}"
+                ),  # f"https://api.github.com/repos/{repo_owner}/{repo_name}/git/refs/heads/{repo_branch}" & f"https://api.github.com/repos/{repo_owner}/{repo_name}/contents?path={cog_name}"
+                timeout=3,
+            )
+            async with xsession as r:
                 online = await r.json()
         if (
             isinstance(online, dict)
