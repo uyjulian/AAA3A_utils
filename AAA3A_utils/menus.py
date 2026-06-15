@@ -18,11 +18,11 @@ from .cogsutils import CogsUtils
 __all__ = ["Menu", "Reactions"]
 
 
-def _(untranslated: str) -> str:
+def _(untranslated     )       :
     return untranslated
 
 
-def cleanup_ansi(text: str) -> str:
+def cleanup_ansi(text     )       :
     for attr in dir(Fore):
         if attr.startswith("_") or not isinstance(getattr(Fore, attr), str):
             continue
@@ -35,22 +35,22 @@ class Menu(discord.ui.View):
 
     def __init__(
         self,
-        pages: list[dict[str, str | typing.Any] | discord.Embed | str],
-        timeout: int = 180,
-        delete_after_timeout: bool = False,
-        page_start: int = 0,
-        members: typing.Iterable[discord.Member | int] = None,
-        ephemeral: bool = False,
-        prefix: str = None,
-        lang: str = None,
-    ) -> None:
+        pages                                                         ,
+        timeout             = 180,
+        delete_after_timeout              = False,
+        page_start             = 0,
+        members                                               = None,
+        ephemeral              = False,
+        prefix             = None,
+        lang             = None,
+    )        :
         if members is None:
             members = []
         super().__init__(timeout=timeout)
-        self.ctx: commands.Context = None
-        self.pages: list[str | discord.Embed | dict[str, typing.Any]] = pages
-        self.delete_after_timeout: bool = delete_after_timeout
-        controls: dict[str, str] = {
+        self.ctx                   = None
+        self.pages                                                    = pages
+        self.delete_after_timeout       = delete_after_timeout
+        controls                 = {
             "⏮️": "left_page",
             "◀️": "prev_page",
             "✖️": "close_page",
@@ -61,30 +61,30 @@ class Menu(discord.ui.View):
             "💾": "send_as_file",
             "choose_page": "choose_page",
         }
-        self.controls: dict[str, str] = controls.copy()
-        self.extra_items: list[discord.ui.Item] = []
-        self.members: list[int] = (
+        self.controls                 = controls.copy()
+        self.extra_items                        = []
+        self.members                   = (
             members if members is None else [getattr(member, "id", member) for member in members]
         )
-        self.ephemeral: bool = ephemeral
+        self.ephemeral       = ephemeral
         if not self.pages:
-            self.pages: list[str] = ["Nothing to show."]
-        self.prefix: str = prefix
+            self.pages            = ["Nothing to show."]
+        self.prefix             = prefix
         if self.prefix is not None and not self.prefix.startswith("```"):
             self.prefix = box(self.prefix, lang="py")
         if isinstance(self.pages, str):
-            self.pages: list[str] = list(
+            self.pages            = list(
                 pagify(
                     self.pages,
                     shorten_by=len(f"```{lang or ''}\n\n```")
                     + (len(f"{self.prefix}\n") if self.prefix is not None else 0),
                 ),
             )
-        self.lang: str = lang
+        self.lang             = lang
         if (self.prefix is not None or lang is not None) and all(
             isinstance(page, str) for page in self.pages
         ):
-            self.pages: list[str] = [
+            self.pages            = [
                 (self.prefix or "")
                 + "\n"
                 + (
@@ -97,11 +97,11 @@ class Menu(discord.ui.View):
         if not isinstance(self.pages[0], (dict, discord.Embed, str)):
             raise RuntimeError("Pages must be of type typing.Dict, discord.Embed or str.")
         if len(self.pages) > 1:
-            self.disabled_controls: list[str] = []
+            self.disabled_controls            = []
         else:
-            self.disabled_controls: list[str] = ["send_as_file", "choose_page"]
+            self.disabled_controls            = ["send_as_file", "choose_page"]
 
-        self._source: self._SimplePageSource = self._SimplePageSource(items=self.pages)
+        self._source                         = self._SimplePageSource(items=self.pages)
         if not self._source.is_paginating():
             for emoji, name in controls.items():
                 if name in ("left_page", "prev_page", "next_page", "right_page"):
@@ -123,11 +123,11 @@ class Menu(discord.ui.View):
                     del self.controls[emoji]
                     self.disabled_controls.append(name)
 
-        self._message: discord.Message = None
-        self._current_page: int = page_start
+        self._message                  = None
+        self._current_page      = page_start
         self._is_done = asyncio.Event()
 
-    async def start(self, ctx: commands.Context, wait: bool = True) -> None:
+    async def start(self, ctx                  , wait       = True)        :
         """
         Used to start the menu displaying the first page requested.
         Parameters
@@ -135,7 +135,7 @@ class Menu(discord.ui.View):
             ctx: `commands.Context`
                 The context to start the menu in.
         """
-        self.ctx: commands.Context = ctx
+        self.ctx                   = ctx
         current, kwargs = await self.get_page(self._current_page)
         if not self.ctx.channel.permissions_for(self.ctx.author).send_messages:
             for emoji, name in self.controls.copy().items():
@@ -167,7 +167,7 @@ class Menu(discord.ui.View):
             await self._is_done.wait()
         return self._message
 
-    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+    async def interaction_check(self, interaction                     )        :
         if interaction.user.id not in [self.ctx.author.id] + self.members + list(
             self.ctx.bot.owner_ids,
         ):
@@ -178,10 +178,10 @@ class Menu(discord.ui.View):
             return False
         return True
 
-    async def on_timeout(self) -> None:
+    async def on_timeout(self)        :
         if not self.delete_after_timeout:
             for child in self.children:
-                child: discord.ui.Item
+                pass #child: discord.ui.Item
                 if hasattr(child, "disabled") and not (
                     isinstance(child, discord.ui.Button) and child.style == discord.ButtonStyle.url
                 ):
@@ -200,8 +200,8 @@ class Menu(discord.ui.View):
 
     async def get_page(
         self,
-        page_num: int,
-    ) -> dict[str, str | discord.Embed | typing.Any]:
+        page_num     ,
+    )                                               :
         try:
             page = await self._source.get_page(page_num)
         except IndexError:
@@ -221,7 +221,7 @@ class Menu(discord.ui.View):
             return current, {"embed": value, "content": None}
         return None
 
-    async def change_page(self, interaction: discord.Interaction = None) -> None:
+    async def change_page(self, interaction                             = None)        :
         if interaction is not None:
             try:
                 await interaction.response.defer()
@@ -233,17 +233,17 @@ class Menu(discord.ui.View):
         self._message = await self._message.edit(**kwargs, view=self)
 
     @discord.ui.button(emoji="⏮️", custom_id="left_page")
-    async def left_page(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+    async def left_page(self, interaction                     , button                   )        :
         self._current_page = 0
         await self.change_page(interaction)
 
     @discord.ui.button(emoji="◀️", custom_id="prev_page")
-    async def prev_page(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+    async def prev_page(self, interaction                     , button                   )        :
         self._current_page += -1
         await self.change_page(interaction)
 
     @discord.ui.button(emoji="✖️", style=discord.ButtonStyle.danger, custom_id="close_page")
-    async def close_page(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+    async def close_page(self, interaction                     , button                   )        :
         await interaction.response.defer()
         try:
             await self._message.delete()
@@ -253,17 +253,17 @@ class Menu(discord.ui.View):
         self._is_done.set()
 
     @discord.ui.button(emoji="▶️", custom_id="next_page")
-    async def next_page(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+    async def next_page(self, interaction                     , button                   )        :
         self._current_page += 1
         await self.change_page(interaction)
 
     @discord.ui.button(emoji="⏭️", custom_id="right_page")
-    async def right_page(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+    async def right_page(self, interaction                     , button                   )        :
         self._current_page = self._source.get_max_pages() - 1
         await self.change_page(interaction)
 
     @discord.ui.button(emoji="🔻", custom_id="send_all")
-    async def send_all(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+    async def send_all(self, interaction                     , button                   )        :
         await interaction.response.defer()
         for i in range(len(self.pages)):
             __, kwargs = await self.get_page(i)
@@ -274,9 +274,9 @@ class Menu(discord.ui.View):
     @discord.ui.button(emoji="📩", custom_id="send_interactive")
     async def send_interactive(
         self,
-        interaction: discord.Interaction,
-        button: discord.ui.Button,
-    ) -> None:
+        interaction                     ,
+        button                   ,
+    )        :
         await interaction.response.defer()
         ret = []
         for i in range(len(self.pages)):
@@ -324,9 +324,9 @@ class Menu(discord.ui.View):
     @discord.ui.button(emoji="💾", custom_id="send_as_file")
     async def send_as_file(
         self,
-        interaction: discord.Interaction,
-        button: discord.ui.Button,
-    ) -> None:
+        interaction                     ,
+        button                   ,
+    )        :
         await interaction.response.defer(ephemeral=True, thinking=True)
 
         def cleanup_code(content):
@@ -359,9 +359,9 @@ class Menu(discord.ui.View):
     @discord.ui.button(label="Page 1/1", custom_id="choose_page")
     async def choose_page(
         self,
-        interaction: discord.Interaction,
-        button: discord.ui.Button,
-    ) -> None:
+        interaction                     ,
+        button                   ,
+    )        :
         class ChoosePageModal(discord.ui.Modal):
             def __init__(_self):
                 super().__init__(title="Choose page")
@@ -374,7 +374,7 @@ class Menu(discord.ui.View):
                 )
                 _self.add_item(_self.item)
 
-            async def on_submit(_self, interaction: discord.Interaction):
+            async def on_submit(_self, interaction                     ):
                 # Too late.
                 if self._is_done.is_set():
                     await interaction.response.send_message(
@@ -409,15 +409,15 @@ class Menu(discord.ui.View):
     class _SimplePageSource(menus.ListPageSource):
         def __init__(
             self,
-            items: list[dict[str, str | discord.Embed] | discord.Embed | str],
-        ) -> None:
+            items                                                            ,
+        )        :
             super().__init__(items, per_page=1)
 
         async def format_page(
             self,
             view,
-            page: dict[str, str | discord.Embed] | discord.Embed | str,
-        ) -> str | discord.Embed:
+            page                                                      ,
+        )                       :
             return page
 
 
@@ -426,22 +426,22 @@ class Reactions:
 
     def __init__(
         self,
-        bot: Red,
-        message: discord.Message,
-        remove_reaction: bool = True,
-        timeout: int = 180,
-        reactions: list = None,
-        members: typing.Iterable[discord.Member | int] = None,
-        check: typing.Callable = None,
-        function: typing.Callable = None,
-        function_args: dict = None,
-        infinity: bool = False,
-    ) -> None:
+        bot     ,
+        message                 ,
+        remove_reaction              = True,
+        timeout             = 180,
+        reactions              = None,
+        members                                               = None,
+        check                         = None,
+        function                         = None,
+        function_args              = None,
+        infinity              = False,
+    )        :
         if reactions is None:
             reactions = ["✅", "❌"]
         if function_args is None:
             function_args = {}
-        self.reactions_dict_instance: dict[str, typing.Any] = {
+        self.reactions_dict_instance                        = {
             "message": message,
             "timeout": timeout,
             "reactions": reactions,
@@ -451,29 +451,29 @@ class Reactions:
             "function_args": function_args,
             "infinity": infinity,
         }
-        self.bot: Red = bot
-        self.message: discord.Message = message
-        self.remove_reaction: bool = remove_reaction
-        self.timeout: int = timeout
-        self.infinity: bool = infinity
-        self.reaction_result: str | discord.PartialEmoji = None
-        self.user_result: discord.User = None
-        self.function_result: typing.Any = None
-        self.members: list[int] = (
+        self.bot      = bot
+        self.message                  = message
+        self.remove_reaction       = remove_reaction
+        self.timeout      = timeout
+        self.infinity       = infinity
+        self.reaction_result                             = None
+        self.user_result               = None
+        self.function_result                    = None
+        self.members                   = (
             members if members is None else [getattr(member, "id", member) for member in members]
         )
-        self.check: typing.Callable = check
-        self.function: typing.Callable = function
-        self.function_args: dict[str, typing.Any] = function_args
-        self.reactions: list[str] = reactions
-        self.r: bool = False
-        self.done: asyncio.Event = asyncio.Event()
+        self.check                         = check
+        self.function                         = function
+        self.function_args                               = function_args
+        self.reactions            = reactions
+        self.r       = False
+        self.done                = asyncio.Event()
         asyncio.create_task(self.wait())
 
     def to_dict_cogsutils(
         self,
-        for_Config: bool = False,
-    ) -> dict[str, typing.Any]:
+        for_Config              = False,
+    )                         :
         reactions_dict_instance = self.reactions_dict_instance
         if for_Config:
             reactions_dict_instance["bot"] = None
@@ -486,11 +486,11 @@ class Reactions:
     @classmethod
     def from_dict_cogsutils(
         cls,
-        reactions_dict_instance: dict,
-    ) -> typing.Any:  # typing_extensions.Self
+        reactions_dict_instance      ,
+    )              :  # typing_extensions.Self
         return cls(**reactions_dict_instance)
 
-    async def wait(self) -> None:
+    async def wait(self)        :
         if not self.r:
             await start_adding_reactions(self.message, self.reactions)
             self.r = True
@@ -513,13 +513,13 @@ class Reactions:
         except TimeoutError:
             await self.on_timeout()
 
-    async def reaction_check(self, reaction: discord.Reaction, user: discord.User) -> bool:
+    async def reaction_check(self, reaction                  , user              )        :
         async def remove_reaction(
             remove_reaction,
-            message: discord.Message,
-            reaction: discord.Reaction,
-            user: discord.User,
-        ) -> None:
+            message                 ,
+            reaction                  ,
+            user              ,
+        )        :
             if remove_reaction:
                 try:
                     await message.remove_reaction(emoji=reaction, member=user)
@@ -543,16 +543,16 @@ class Reactions:
         self.done.set()
         return self.infinity
 
-    async def on_timeout(self) -> None:
+    async def on_timeout(self)        :
         self.done.set()
 
     async def wait_result(
         self,
-    ) -> tuple[
-        discord.PartialEmoji | str,
-        discord.User,
-        typing.Any,
-    ]:
+    ):          
+                                   
+                     
+                          
+     
         self.done = asyncio.Event()
         await self.done.wait()
         reaction, user, function_result = self.get_result()
@@ -563,9 +563,9 @@ class Reactions:
 
     def get_result(
         self,
-    ) -> tuple[
-        discord.PartialEmoji | str,
-        discord.User,
-        typing.Any,
-    ]:
+    ):          
+                                   
+                     
+                          
+     
         return self.reaction_result, self.user_result, self.function_result

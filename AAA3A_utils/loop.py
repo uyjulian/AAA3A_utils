@@ -19,15 +19,15 @@ from .cogsutils import CogsUtils
 __all__ = ["Loop"]
 
 
-def _(untranslated: str) -> str:
+def _(untranslated     )       :
     return untranslated
 
 
 def no_colour_rich_markup(
-    *objects: typing.Any,
-    lang: str = "",
-    no_box: bool = False,
-) -> str:
+    *objects            ,
+    lang      = "",
+    no_box              = False,
+)       :
     """
     Slimmed down version of rich_markup which ensures no colours (/ANSI) can exist.
     """
@@ -50,66 +50,66 @@ class Loop:
 
     def __init__(
         self,
-        cog: commands.Cog,
-        name: str,
-        function: typing.Callable,
-        days: int = 0,
-        hours: int = 0,
-        minutes: int = 0,
-        seconds: int = 0,
-        function_kwargs: dict[str, typing.Any] = None,
-        wait_raw: bool = False,
-        limit_count: int = None,
-        limit_date: datetime.datetime = None,
-        limit_exception: int = None,
-        start_now: bool = True,
-    ) -> None:
-        self.cog: commands.Cog = cog
-        self.name: str = name
-        self.function: typing.Callable = function
-        self.function_kwargs: dict[str, typing.Any] = function_kwargs or {}
-        self.interval: float = datetime.timedelta(
+        cog              ,
+        name     ,
+        function                 ,
+        days      = 0,
+        hours      = 0,
+        minutes      = 0,
+        seconds      = 0,
+        function_kwargs                               = None,
+        wait_raw       = False,
+        limit_count             = None,
+        limit_date                           = None,
+        limit_exception             = None,
+        start_now       = True,
+    )        :
+        self.cog               = cog
+        self.name      = name
+        self.function                  = function
+        self.function_kwargs                        = function_kwargs or {}
+        self.interval        = datetime.timedelta(
             days=days,
             hours=hours,
             minutes=minutes,
             seconds=seconds,
         ).total_seconds()
-        self.wait_raw: bool = wait_raw
-        self.limit_count: int = limit_count
-        self.limit_date: datetime.datetime = limit_date
-        self.limit_exception: int = limit_exception
-        self.stop_manually: bool = False
+        self.wait_raw       = wait_raw
+        self.limit_count             = limit_count
+        self.limit_date                           = limit_date
+        self.limit_exception             = limit_exception
+        self.stop_manually       = False
 
-        self.start_datetime: datetime.datetime = datetime.datetime.now(tz=datetime.timezone.utc)
-        self.expected_interval: datetime.timedelta = datetime.timedelta(seconds=self.interval)
-        self.last_iteration: datetime.datetime = None
-        self.next_iteration: datetime.datetime = None
-        self.currently_running: bool = False
-        self.iteration_count: int = 0
-        self.last_result: typing.Any = None
-        self.last_iteration_duration: float = None
-        self.iteration_exception: int = 0
-        self.last_exc: str = "No exception has occurred yet."
-        self.last_exc_raw: BaseException = None
-        self.stop: bool = False
+        self.start_datetime                    = datetime.datetime.now(tz=datetime.timezone.utc)
+        self.expected_interval                     = datetime.timedelta(seconds=self.interval)
+        self.last_iteration                           = None
+        self.next_iteration                           = None
+        self.currently_running       = False
+        self.iteration_count      = 0
+        self.last_result             = None
+        self.last_iteration_duration               = None
+        self.iteration_exception      = 0
+        self.last_exc      = "No exception has occurred yet."
+        self.last_exc_raw                       = None
+        self.stop       = False
 
-        self.task: asyncio.Task = None
+        self.task                      = None
         if start_now:
             self.start()
 
-    def start(self) -> "Loop":
+    def start(self)          :
         self.task = self.cog.bot.loop.create_task(self.loop())
         return self
 
     @property
-    def integrity(self) -> bool:
+    def integrity(self)        :
         """Check if the loop is running on time."""
         return self.next_iteration and self.next_iteration > datetime.datetime.now(
             tz=datetime.timezone.utc,
         )
 
     @property
-    def until_next(self) -> float:
+    def until_next(self)         :
         """Calculate seconds until the next iteration."""
         if not self.next_iteration:
             return 0.0
@@ -118,7 +118,7 @@ class Loop:
         ).total_seconds()
         return max(0.0, min(raw_until_next, self.expected_interval.total_seconds()))
 
-    async def wait_until_iteration(self) -> None:
+    async def wait_until_iteration(self)        :
         """Sleep until the next iteration."""
         seconds_to_sleep = self.until_next
         if seconds_to_sleep > 0:
@@ -129,7 +129,7 @@ class Loop:
                 )
             await asyncio.sleep(seconds_to_sleep)
 
-    async def loop(self) -> None:
+    async def loop(self)        :
         await self.cog.bot.wait_until_red_ready()
         await asyncio.sleep(1)
         if hasattr(self.cog, "logger"):
@@ -142,7 +142,7 @@ class Loop:
                 self.adjust_next_iteration()
             await self.wait_until_iteration()
 
-    async def execute(self) -> None:
+    async def execute(self)        :
         start = time.monotonic()
         self.iteration_start()
         try:
@@ -152,7 +152,7 @@ class Loop:
         self.iteration_finish()
         self.log_iteration_time(start)
 
-    def maybe_stop(self) -> bool:
+    def maybe_stop(self)        :
         """Check if the loop should stop."""
         if self.stop or self.stop_manually:
             self.stop_all()
@@ -168,7 +168,7 @@ class Loop:
             return True
         return False
 
-    def stop_all(self) -> "Loop":
+    def stop_all(self)          :
         """Stop the loop."""
         self.stop = True
         self.next_iteration = None
@@ -180,7 +180,7 @@ class Loop:
             )
         return self
 
-    def adjust_next_iteration(self) -> None:
+    def adjust_next_iteration(self)        :
         """Adjust the next iteration time for alignment."""
         if not self.next_iteration:
             return
@@ -191,7 +191,7 @@ class Loop:
         else:
             self.next_iteration = self.next_iteration.replace(microsecond=0)
 
-    def log_iteration_time(self, start: float) -> None:
+    def log_iteration_time(self, start       )        :
         """Log the time taken for an iteration."""
         end = time.monotonic()
         total = round(end - start, 1)
@@ -206,7 +206,7 @@ class Loop:
                     f"{self.name} iteration finished in {total}s ({self.iteration_count}).",
                 )
 
-    def handle_iteration_error(self, error: BaseException) -> None:
+    def handle_iteration_error(self, error               )        :
         """Handle errors during an iteration."""
         if hasattr(self.cog, "logger"):
             self.cog.logger.exception(
@@ -215,14 +215,14 @@ class Loop:
             )
         self.iteration_error(error)
 
-    def __repr__(self) -> str:
+    def __repr__(self)       :
         return (
             f"<friendly_name={self.name!r} iteration_count={self.iteration_count} "
             f"currently_running={self.currently_running} last_iteration={self.last_iteration!r} "
             f"next_iteration={self.next_iteration!r} integrity={self.integrity}>"
         )
 
-    def iteration_start(self) -> None:
+    def iteration_start(self)        :
         """Register an iteration as starting."""
         self.iteration_count += 1
         self.currently_running = True
@@ -230,21 +230,21 @@ class Loop:
         self.last_iteration = now
         self.next_iteration = now + self.expected_interval
 
-    def iteration_finish(self) -> None:
+    def iteration_finish(self)        :
         """Register an iteration as finished successfully."""
         self.currently_running = False
 
-    def iteration_error(self, error: BaseException) -> None:
+    def iteration_error(self, error               )        :
         """Register an iteration's error."""
         self.currently_running = False
         self.last_exc_raw = error
         self.last_exc = "".join(traceback.format_exception(type(error), error, error.__traceback__))
 
-    def get_debug_embed(self) -> discord.Embed:
+    def get_debug_embed(self)                 :
         """Get an embed with detailed information about this loop."""
         now = datetime.datetime.now(tz=datetime.timezone.utc)
 
-        def create_table(data: list[tuple[str, str]]) -> str:
+        def create_table(data                       )       :
             table = Table("Key", "Value")
             for key, value in data:
                 table.add_row(key, value)

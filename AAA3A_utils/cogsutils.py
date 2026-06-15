@@ -27,11 +27,11 @@ from .views import ConfirmationAskView
 __all__ = ["CogsUtils"]
 
 
-def _(untranslated: str) -> str:
+def _(untranslated     )       :
     return untranslated
 
 
-replacement_var_paths: bool = True
+replacement_var_paths       = True
 
 
 class CogsUtils:
@@ -54,14 +54,14 @@ class CogsUtils:
     #         self.bot: typing.Optional[Red] = None
 
     @property
-    def is_dpy2(self) -> bool:
+    def is_dpy2(self)        :
         """
         Returns `True` if the current redbot instance is running under dpy2.
         """
         return discord.version_info.major >= 2
 
     @classmethod
-    def replace_var_paths(cls, text: str, reverse: bool = False) -> str:
+    def replace_var_paths(cls, text     , reverse              = False)       :
         if not reverse:
             if not replacement_var_paths:
                 return text
@@ -76,7 +76,7 @@ class CogsUtils:
         else:
 
             class FakeDict(dict):
-                def __missing__(self, key: str) -> str:
+                def __missing__(self, key     )       :
                     if (
                         key.upper() in ("USERPROFILE", "HOME", "USERNAME", "COMPUTERNAME")
                         and key.upper() in os.environ
@@ -107,9 +107,9 @@ class CogsUtils:
     @classmethod
     def get_logger(
         cls,
-        name: str = None,
-        cog: commands.Cog = None,
-    ) -> logging.Logger:
+        name             = None,
+        cog                      = None,
+    )                  :
         """
         Get a logger for a provided name or a provided cog.
         Thanks to @laggron42 on GitHub! (https://github.com/laggron42/Laggron-utils/blob/master/laggron_utils/logging.py)
@@ -198,7 +198,7 @@ class CogsUtils:
         return logger
 
     @classmethod
-    def close_logger(cls, logger: logging.Logger) -> None:
+    def close_logger(cls, logger                )        :
         """
         Closes the files for the logger of a cog.
         """
@@ -209,9 +209,9 @@ class CogsUtils:
     @classmethod
     async def get_cog_version(
         cls,
-        bot: Red,
-        cog: commands.Cog | str,
-    ) -> tuple[int, float, str]:
+        bot     ,
+        cog                    ,
+    )                          :
         cog_name = cog.lower() if isinstance(cog, str) else cog.qualified_name.lower()
         downloader_cog = bot.get_cog("Downloader")
         if downloader_cog is None:
@@ -275,10 +275,10 @@ class CogsUtils:
     @classmethod
     async def check_if_to_update(
         cls,
-        bot: Red,
-        cog: commands.Cog | str,
-        repo_url: str = None,
-    ) -> tuple[bool, str, str]:
+        bot     ,
+        cog                    ,
+        repo_url             = None,
+    )                         :
         cog_name = cog.lower() if isinstance(cog, str) else cog.qualified_name.lower()
         if repo_url is None:
             downloader_cog = bot.get_cog("Downloader")
@@ -334,10 +334,10 @@ class CogsUtils:
 
         async def compare_commit_dates(repo_owner, repo_name, commit_sha1, commit_sha2):
             async def get_commit_date(
-                repo_owner: str,
-                repo_name: str,
-                commit_sha: str,
-                session: aiohttp.ClientSession,
+                repo_owner     ,
+                repo_name     ,
+                commit_sha     ,
+                session                       ,
             ):
                 url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/commits/{commit_sha}"
                 headers = {"Accept": "application/vnd.github+json"}
@@ -378,7 +378,7 @@ class CogsUtils:
         return to_update, local_commit, online_commit  # , online_commit_for_each_files
 
     @classmethod
-    async def add_hybrid_commands(cls, bot: Red, cog: commands.Cog) -> None:
+    async def add_hybrid_commands(cls, bot     , cog              )        :
         if hasattr(cog, "settings") and hasattr(cog.settings, "commands_added"):
             await cog.settings.commands_added.wait()
         if cog.qualified_name == "Medicat" and hasattr(cog, "CC_added"):
@@ -403,15 +403,15 @@ class CogsUtils:
     @classmethod
     async def ConfirmationAsk(
         cls,
-        ctx: commands.Context,
+        ctx                  ,
         *args,
-        timeout: int = 60,
-        timeout_message: str = _("Timed out, please try again"),
-        way: typing.Literal["buttons", "message"] = "buttons",  # , "reactions"
-        delete_message: bool = True,
-        members_authored: typing.Iterable[discord.Member] = [],
+        timeout             = 60,
+        timeout_message             = _("Timed out, please try again"),
+        way                                              = "buttons",  # , "reactions"
+        delete_message              = True,
+        members_authored                                         = [],
         **kwargs,
-    ) -> bool:
+    )        :
         """
         Request a confirmation by the user., in the form of buttons/message, with many additional options.
         """
@@ -507,9 +507,9 @@ class CogsUtils:
     @classmethod
     async def delete_message(
         cls,
-        message: discord.Message,
-        delay: float = None,
-    ) -> bool:
+        message                 ,
+        delay               = None,
+    )        :
         """
         Delete a message, ignoring any exceptions.
         Easier than putting these 3 lines at each message deletion for each cog.
@@ -528,18 +528,18 @@ class CogsUtils:
     @classmethod
     async def invoke_command(
         cls,
-        bot: Red,
-        author: discord.User,
-        channel: discord.TextChannel,
-        command: str,
-        prefix: str = None,
-        message: discord.Message = None,
-        dispatch_message: bool = False,
-        invoke: bool = True,
-        __is_mocked__: bool = True,
-        created_at: datetime.datetime = None,
+        bot     ,
+        author              ,
+        channel                     ,
+        command     ,
+        prefix             = None,
+        message                         = None,
+        dispatch_message              = False,
+        invoke              = True,
+        __is_mocked__              = True,
+        created_at                           = None,
         **kwargs,
-    ) -> commands.Context | discord.Message:
+    )                                      :
         """
         Invoke the specified command with the specified user in the specified channel.
         """
@@ -586,7 +586,7 @@ class CogsUtils:
                 "components": [],
                 "referenced_message": None,
             }
-            message: discord.Message = discord.Message(
+            message                  = discord.Message(
                 channel=channel,
                 state=bot._connection,
                 data=data,
@@ -597,7 +597,7 @@ class CogsUtils:
             message.channel = channel
             message.content = content
 
-        context: commands.Context = await bot.get_context(message)
+        context                   = await bot.get_context(message)
         context.author = author
         context.guild = channel.guild
         context.channel = channel
@@ -610,7 +610,7 @@ class CogsUtils:
                 alias = await Alias._aliases.get_alias(context.guild, context.invoked_with)
                 if alias is not None:
 
-                    async def command_callback(__, ctx: commands.Context):
+                    async def command_callback(__, ctx                  ):
                         await Alias.call_alias(ctx.message, ctx.prefix, alias)
 
                     context.command = commands.command(name="alias")(command_callback)
@@ -635,7 +635,7 @@ class CogsUtils:
                     pass
                 else:
 
-                    async def command_callback(__, ctx: commands.Context):
+                    async def command_callback(__, ctx                  ):
                         # await CustomCommands.cc_callback(ctx)  # fake callback
                         try:
                             if cooldowns:
@@ -665,7 +665,7 @@ class CogsUtils:
                 tag = Tags.get_tag(context.guild, context.invoked_with, check_global=True)
                 if tag is not None:
                     message.content = f"{context.prefix}invoketag {command}"
-                    context: commands.Context = await bot.get_context(message)
+                    context                   = await bot.get_context(message)
                     context.author = author
                     context.guild = channel.guild
                     context.channel = channel
@@ -684,7 +684,7 @@ class CogsUtils:
         return context
 
     @classmethod
-    async def get_hook(cls, bot: Red, channel: discord.TextChannel) -> discord.Webhook:
+    async def get_hook(cls, bot     , channel                     )                   :
         """
         Create a discord.Webhook object. It tries to retrieve an existing webhook created by the bot or to create it itself.
         """
@@ -699,8 +699,8 @@ class CogsUtils:
     @classmethod
     def get_embed(
         cls,
-        embed_dict: dict,
-    ) -> dict[str, discord.Embed | str]:
+        embed_dict      ,
+    )                                  :
         data = embed_dict
         if data.get("embed"):
             data = data["embed"]
@@ -734,9 +734,9 @@ class CogsUtils:
     @classmethod
     def datetime_to_timestamp(
         cls,
-        dt: datetime.datetime,
-        format: typing.Literal["f", "F", "d", "D", "t", "T", "R"] = "f",
-    ) -> str:
+        dt                   ,
+        format                                                    = "f",
+    )       :
         """
         Generate a Discord timestamp from a datetime object.
         <t:TIMESTAMP:FORMAT>
@@ -765,10 +765,10 @@ class CogsUtils:
     @classmethod
     def get_interval_string(
         cls,
-        expires: datetime.datetime | datetime.timedelta,
-        utc_now: datetime.datetime = None,
-        use_timestamp: bool = False,
-    ) -> str:
+        expires                                               ,
+        utc_now                    = None,
+        use_timestamp       = False,
+    )       :
         """
         Get a string from a given duration.
         """
@@ -822,10 +822,10 @@ class CogsUtils:
     @classmethod
     def check_permissions_for(
         cls,
-        channel: discord.TextChannel | discord.VoiceChannel | discord.DMChannel,
-        user: discord.User,
-        check: list | dict,
-    ) -> bool:
+        channel                                                                ,
+        user              ,
+        check             ,
+    )        :
         """
         Check all permissions specified as an argument.
         """
@@ -894,7 +894,7 @@ class CogsUtils:
     #     return loop
 
     @classmethod
-    def get_all_repo_cogs_objects(cls, bot: Red) -> dict[str, commands.Cog]:
+    def get_all_repo_cogs_objects(cls, bot     )                           :
         """
         Get a dictionary containing the objects of all my cogs.
         """
@@ -907,7 +907,7 @@ class CogsUtils:
         return cogs
 
     @classmethod
-    def at_least_one_cog_loaded(cls, bot: Red) -> bool:
+    def at_least_one_cog_loaded(cls, bot     )        :
         """
         Return True if at least one cog of all my cogs is loaded.
         """
@@ -916,10 +916,10 @@ class CogsUtils:
     @classmethod
     def generate_key(
         cls,
-        length: int = 10,
-        existing_keys: list | set = None,
-        strings_used: list = None,
-    ) -> str:
+        length             = 10,
+        existing_keys                    = None,
+        strings_used              = None,
+    )       :
         """
         Generate a secret key, with the choice of characters, the number of characters and a list of existing keys.
         """
@@ -953,10 +953,10 @@ class CogsUtils:
     @classmethod
     async def check_in_listener(
         cls,
-        bot: Red,
-        arg: discord.Message | discord.RawReactionActionEvent | discord.Interaction,
-        allowed_by_whitelist_blacklist: bool = True,
-    ) -> bool:
+        bot     ,
+        arg                                                                        ,
+        allowed_by_whitelist_blacklist       = True,
+    )        :
         """
         Check all parameters for the output of any listener.
         Thanks to Jack! (https://discord.com/channels/133049272517001216/160386989819035648/825373605000511518)

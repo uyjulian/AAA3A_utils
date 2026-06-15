@@ -33,9 +33,9 @@ __all__ = ["Context"]
 
 
 def is_dev(
-    bot: Red,
-    user: discord.User | discord.Member | discord.Object | int = None,
-) -> bool:
+    bot     ,
+    user                                                              = None,
+)        :
     developers_ids = [829612600059887649]
     Sudo = bot.get_cog("Sudo")
     if Sudo is None or (
@@ -52,22 +52,22 @@ def is_dev(
 
 
 class Context:
-    def __init__(self, original_context: commands.Context) -> None:
-        self.original_context: commands.Context = original_context
+    def __init__(self, original_context                  )        :
+        self.original_context                   = original_context
         if not hasattr(self, "len_messages"):
-            self.len_messages: int = 0
+            self.len_messages      = 0
 
     @classmethod
-    async def from_context(cls, ctx: commands.Context) -> typing.Any:  # typing_extensions.Self
+    async def from_context(cls, ctx                  )              :  # typing_extensions.Self
         """
         Adding additional functionality to the context.
         """
         return cls(ctx)
 
-    def __getattr__(self, __name) -> typing.Any:
+    def __getattr__(self, __name)              :
         return getattr(self.original_context, __name)
 
-    def __setattr__(self, __name, __value) -> None:
+    def __setattr__(self, __name, __value)        :
         if __name == "original_context":
             return super().__setattr__(__name, __value)
         return self.original_context.__setattr__(__name, __value)
@@ -78,13 +78,13 @@ class Context:
     async def tick(
         self,
         *,
-        message: str = None,
-        reaction: str = (
+        message             = None,
+        reaction             = (
             commands.context.TICK
             if not hasattr(commands.context, "MORE_TICKS")
             else random.choice(list(commands.context.MORE_TICKS))
         ),
-    ) -> bool:
+    )        :
         """Add a tick reaction to the command message.
 
         Keyword Arguments
@@ -110,7 +110,7 @@ class Context:
                 message = None
         return await self.original_context.react_quietly(reaction, message=message)
 
-    async def send(self, content=None, **kwargs) -> discord.Message:
+    async def send(self, content=None, **kwargs)                   :
         """Sends a message to the destination with the content given.
 
         This acts the same as `discord.ext.commands.Context.send`, with
@@ -154,10 +154,10 @@ class Context:
 
     async def send_interactive(
         self,
-        messages: typing.Iterable[str],
-        box_lang: str = None,
-        timeout: int = 15,
-    ) -> list[discord.Message]:
+        messages                      ,
+        box_lang      = None,
+        timeout      = 15,
+    )                         :
         """Send multiple messages interactively.
 
         The user will be prompted for whether or not they would like to view

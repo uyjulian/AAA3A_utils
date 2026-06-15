@@ -23,11 +23,11 @@ __all__ = [
 ]
 
 
-def _(untranslated: str) -> str:
+def _(untranslated     )       :
     return untranslated
 
 
-def generate_key(length: int = 10) -> str:  # same in CogsUtils
+def generate_key(length             = 10)       :  # same in CogsUtils
     strings = []
     strings += string.ascii_lowercase
     strings += string.digits
@@ -39,27 +39,27 @@ class ConfirmationAskView(discord.ui.View):
 
     def __init__(
         self,
-        ctx: commands.Context,
-        timeout: int = 60,
-        timeout_message: str = _("Timed out, please try again."),
-        delete_message: bool = True,
-        delete_after_timeout: bool = True,
-        members: typing.Iterable[discord.Member | int] = None,
+        ctx                  ,
+        timeout             = 60,
+        timeout_message             = _("Timed out, please try again."),
+        delete_message              = True,
+        delete_after_timeout              = True,
+        members                                               = None,
     ):
         super().__init__(timeout=timeout)
-        self.ctx: commands.Context = ctx
+        self.ctx                   = ctx
 
-        self.delete_message: bool = delete_message
-        self.timeout_message: str = timeout_message
-        self.delete_after_timeout: bool = delete_after_timeout
-        self.members: list[int] = (
+        self.delete_message       = delete_message
+        self.timeout_message      = timeout_message
+        self.delete_after_timeout       = delete_after_timeout
+        self.members                   = (
             [] if members is None else [getattr(member, "id", member) for member in members]
         )
 
-        self._message: discord.Message = None
-        self._result: bool = None
+        self._message                  = None
+        self._result              = None
 
-    async def start(self, *args, **kwargs) -> bool:
+    async def start(self, *args, **kwargs)        :
         """
         Request a confirmation by the user.
         """
@@ -67,7 +67,7 @@ class ConfirmationAskView(discord.ui.View):
         task_result = await self.wait()
         return None if task_result is True or self._result is None else self._result
 
-    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+    async def interaction_check(self, interaction                     )        :
         if interaction.user.id not in [self.ctx.author.id] + self.members + list(
             self.ctx.bot.owner_ids,
         ):
@@ -78,12 +78,12 @@ class ConfirmationAskView(discord.ui.View):
             return False
         return True
 
-    async def on_timeout(self) -> None:
+    async def on_timeout(self)        :
         if self.timeout_message is not None:
             await self.ctx.send(self.timeout_message)
         if not self.delete_after_timeout:
             for child in self.children:
-                child: discord.ui.Item
+                pass #child: discord.ui.Item
                 if isinstance(child, discord.ui.Button) and child.style != discord.ButtonStyle.url:
                     child.disabled = True
             try:
@@ -103,7 +103,7 @@ class ConfirmationAskView(discord.ui.View):
         style=discord.ButtonStyle.danger,
         custom_id="false_button",
     )
-    async def false_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def false_button(self, interaction                     , button                   ):
         await interaction.response.defer()
         if self.delete_message:
             try:
@@ -119,7 +119,7 @@ class ConfirmationAskView(discord.ui.View):
         style=discord.ButtonStyle.success,
         custom_id="true_button",
     )
-    async def true_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def true_button(self, interaction                     , button                   ):
         await interaction.response.defer()
         if self.delete_message:
             try:
@@ -135,14 +135,14 @@ class Buttons(discord.ui.View):
 
     def __init__(
         self,
-        timeout: int = 180,
-        buttons: list = None,
-        members: typing.Iterable[discord.Member | int] = None,
-        check: typing.Callable = None,
-        function: typing.Callable = None,
-        function_kwargs: dict[str, typing.Any] = None,
-        infinity: bool = False,
-    ) -> None:
+        timeout             = 180,
+        buttons              = None,
+        members                                               = None,
+        check                         = None,
+        function                         = None,
+        function_kwargs                               = None,
+        infinity              = False,
+    )        :
         """style: ButtonStyle, label: Optional[str], disabled: bool, custom_id: Optional[str], url: Optional[str], emoji: Optional[Union[str, Emoji, PartialEmoji]], row: Optional[int]"""
         if buttons is None:
             buttons = [{}]
@@ -154,7 +154,7 @@ class Buttons(discord.ui.View):
                 continue
             if "custom_id" not in button_dict:
                 button_dict["custom_id"] = "CogsUtils" + "_" + generate_key(length=10)
-        self.buttons_dict_instance: dict[str, typing.Any] = {
+        self.buttons_dict_instance                        = {
             "timeout": timeout,
             "buttons": [b.copy() for b in buttons],
             "members": members,
@@ -164,18 +164,18 @@ class Buttons(discord.ui.View):
             "infinity": infinity,
         }
         super().__init__(timeout=timeout)
-        self.infinity: bool = infinity
-        self.interaction_result: discord.Interaction = None
-        self.function_result: typing.Any = None
-        self.members: list[int] = (
+        self.infinity       = infinity
+        self.interaction_result                             = None
+        self.function_result                    = None
+        self.members                   = (
             members if members is None else [getattr(member, "id", member) for member in members]
         )
-        self.check: typing.Callable = check
-        self.function: typing.Callable = function
-        self.function_kwargs: dict[str, typing.Any] = function_kwargs
+        self.check                         = check
+        self.function                         = function
+        self.function_kwargs                               = function_kwargs
         self.clear_items()
-        self.buttons: list[discord.ui.Button] = []
-        self.buttons_dict: list[dict[str, typing.Any]] = []
+        self.buttons                          = []
+        self.buttons_dict                              = []
         for button_dict in buttons:
             if "style" not in button_dict:
                 button_dict["style"] = discord.ButtonStyle(2)
@@ -189,12 +189,12 @@ class Buttons(discord.ui.View):
             self.add_item(button)
             self.buttons.append(button)
             self.buttons_dict.append(button_dict)
-        self.done: asyncio.Event = asyncio.Event()
+        self.done                = asyncio.Event()
 
     def to_dict_cogsutils(
         self,
-        for_Config: bool = False,
-    ) -> dict[str, typing.Any]:
+        for_Config              = False,
+    )                         :
         buttons_dict_instance = self.buttons_dict_instance
         if for_Config:
             buttons_dict_instance["check"] = None
@@ -204,14 +204,14 @@ class Buttons(discord.ui.View):
     @classmethod
     def from_dict_cogsutils(
         cls,
-        buttons_dict_instance: dict,
-    ) -> typing.Any:  # typing_extensions.Self
+        buttons_dict_instance      ,
+    )              :  # typing_extensions.Self
         if "function_args" in buttons_dict_instance:
             buttons_dict_instance["function_kwargs"] = buttons_dict_instance["function_args"]
             del buttons_dict_instance["function_args"]
         return cls(**buttons_dict_instance)
 
-    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+    async def interaction_check(self, interaction                     )        :
         if self.members is not None and interaction.user.id not in self.members:
             await interaction.response.send_message(
                 "You are not allowed to use this interaction.",
@@ -232,11 +232,11 @@ class Buttons(discord.ui.View):
             self.stop()
         return True
 
-    async def on_timeout(self) -> None:
+    async def on_timeout(self)        :
         self.done.set()
         self.stop()
 
-    async def on_error(self, interaction: discord.Interaction, error: Exception, item) -> None:
+    async def on_error(self, interaction                     , error           , item)        :
         if not interaction.response.is_done():
             await interaction.response.defer(ephemeral=True)
         await interaction.followup.send("Sorry. An error has occurred.", ephemeral=True)
@@ -247,7 +247,7 @@ class Buttons(discord.ui.View):
             exc_info=error,
         )
 
-    async def wait_result(self) -> tuple[discord.Interaction, typing.Any]:
+    async def wait_result(self)                                                 :
         self.done = asyncio.Event()
         await self.done.wait()
         interaction, function_result = self.get_result()
@@ -256,7 +256,7 @@ class Buttons(discord.ui.View):
         self.interaction_result, self.function_result = None, None
         return interaction, function_result
 
-    def get_result(self) -> tuple[discord.Interaction, typing.Any]:
+    def get_result(self)                                                 :
         return self.interaction_result, self.function_result
 
 
@@ -265,27 +265,27 @@ class Dropdown(discord.ui.View):
 
     def __init__(
         self,
-        timeout: int = 180,
-        placeholder: str = "Choose an option.",
-        min_values: int = 1,
-        max_values: int = 1,
+        timeout             = 180,
+        placeholder             = "Choose an option.",
+        min_values             = 1,
+        max_values             = 1,
         *,
-        _type: discord.ComponentType = discord.ComponentType.select,
-        options: list | discord.ComponentType | discord.ui.Select = None,
-        disabled: bool = False,
-        members: typing.Iterable[discord.Member | int] = None,
-        check: typing.Callable = None,
-        function: typing.Callable = None,
-        function_kwargs: dict[str, typing.Any] = None,
-        infinity: bool = False,
-        custom_id: str = f"CogsUtils_{generate_key(length=10)}",
-    ) -> None:
+        _type                               = discord.ComponentType.select,
+        options                                                          = None,
+        disabled              = False,
+        members                                               = None,
+        check                         = None,
+        function                         = None,
+        function_kwargs                               = None,
+        infinity              = False,
+        custom_id             = f"CogsUtils_{generate_key(length=10)}",
+    )        :
         """label: str, value: str, description: Optional[str], emoji: Optional[Union[str, Emoji, PartialEmoji]], default: bool"""
         if options is None:
             options = [{}]
         if function_kwargs is None:
             function_kwargs = {}
-        self.dropdown_dict_instance: dict[str, typing.Any] = {
+        self.dropdown_dict_instance                        = {
             "timeout": timeout,
             "placeholder": placeholder,
             "min_values": min_values,
@@ -304,21 +304,21 @@ class Dropdown(discord.ui.View):
             "custom_id": custom_id,
         }
         super().__init__(timeout=timeout)
-        self._type: discord.ComponentType = _type
-        self.infinity: bool = infinity
-        self.interaction_result: discord.Interaction = None
-        self.options_result: list[str] = None
-        self.function_result: typing.Any = None
-        self.disabled: bool = disabled
-        self.members: list[int] = (
+        self._type                        = _type
+        self.infinity       = infinity
+        self.interaction_result                             = None
+        self.options_result                   = None
+        self.function_result                    = None
+        self.disabled       = disabled
+        self.members                   = (
             members if members is None else [getattr(member, "id", member) for member in members]
         )
-        self.check: typing.Callable = check
-        self.function: typing.Callable = function
-        self.function_kwargs: dict[str, typing.Any] = function_kwargs
+        self.check                         = check
+        self.function                         = function
+        self.function_kwargs                               = function_kwargs
         self.clear_items()
-        self.options: list[discord.SelectOption] = []
-        self.options_dict: list[dict[str, typing.Any]] = []
+        self.options                             = []
+        self.options_dict                              = []
         if _type is discord.ComponentType.select or _type is Select:
             for option_dict in options:
                 if "label" not in option_dict and "emoji" not in option_dict:
@@ -326,7 +326,7 @@ class Dropdown(discord.ui.View):
                 option = discord.SelectOption(**option_dict)
                 self.options.append(option)
                 self.options_dict.append(option_dict)
-            self.dropdown: discord.ui.Select = Select(
+            self.dropdown                    = Select(
                 placeholder=placeholder,
                 min_values=min_values,
                 max_values=max_values,
@@ -337,7 +337,7 @@ class Dropdown(discord.ui.View):
         elif _type is discord.ComponentType.channel_select or _type is ChannelSelect:
             if options in [[{}], []]:
                 options = None
-            self.dropdown: discord.ui.Select = ChannelSelect(
+            self.dropdown                    = ChannelSelect(
                 placeholder=placeholder,
                 min_values=min_values,
                 max_values=max_values,
@@ -346,7 +346,7 @@ class Dropdown(discord.ui.View):
                 custom_id=custom_id,
             )
         elif _type is discord.ComponentType.mentionable_select or type is MentionableSelect:
-            self.dropdown: discord.ui.Select = MentionableSelect(
+            self.dropdown                    = MentionableSelect(
                 placeholder=placeholder,
                 min_values=min_values,
                 max_values=max_values,
@@ -354,7 +354,7 @@ class Dropdown(discord.ui.View):
                 custom_id=custom_id,
             )
         elif _type is discord.ComponentType.role_select or type is RoleSelect:
-            self.dropdown: discord.ui.Select = RoleSelect(
+            self.dropdown                    = RoleSelect(
                 placeholder=placeholder,
                 min_values=min_values,
                 max_values=max_values,
@@ -362,7 +362,7 @@ class Dropdown(discord.ui.View):
                 custom_id=custom_id,
             )
         elif _type is discord.ComponentType.user_select or _type is UserSelect:
-            self.dropdown: discord.ui.Select = UserSelect(
+            self.dropdown                    = UserSelect(
                 placeholder=placeholder,
                 min_values=min_values,
                 max_values=max_values,
@@ -371,7 +371,7 @@ class Dropdown(discord.ui.View):
             )
         else:
             if inspect.isclass(_type):
-                self.dropdown: discord.ui.Select = _type(
+                self.dropdown                    = _type(
                     placeholder=placeholder,
                     min_values=min_values,
                     max_values=max_values,
@@ -382,12 +382,12 @@ class Dropdown(discord.ui.View):
                 self.dropdown = _type
             setattr(self.dropdown, "callback", partial(_Select.callback, self.dropdown))
         self.add_item(self.dropdown)
-        self.done: asyncio.Event = asyncio.Event()
+        self.done                = asyncio.Event()
 
     def to_dict_cogsutils(
         self,
-        for_Config: bool = False,
-    ) -> dict[str, typing.Any]:
+        for_Config              = False,
+    )                         :
         dropdown_dict_instance = self.dropdown_dict_instance
         if for_Config:
             dropdown_dict_instance["members"] = None
@@ -398,18 +398,18 @@ class Dropdown(discord.ui.View):
     @classmethod
     def from_dict_cogsutils(
         cls,
-        dropdown_dict_instance: dict,
-    ) -> typing.Any:  # typing_extensions.Self
+        dropdown_dict_instance      ,
+    )              :  # typing_extensions.Self
         if "function_args" in dropdown_dict_instance:
             dropdown_dict_instance["function_kwargs"] = dropdown_dict_instance["function_args"]
             del dropdown_dict_instance["function_args"]
         return cls(**dropdown_dict_instance)
 
-    async def on_timeout(self) -> None:
+    async def on_timeout(self)        :
         self.done.set()
         self.stop()
 
-    async def on_error(self, interaction: discord.Interaction, error: Exception, item) -> None:
+    async def on_error(self, interaction                     , error           , item)        :
         if not interaction.response.is_done():
             await interaction.response.defer(ephemeral=True)
         await interaction.followup.send("Sorry. An error has occurred.", ephemeral=True)
@@ -422,7 +422,7 @@ class Dropdown(discord.ui.View):
 
     async def wait_result(
         self,
-    ) -> tuple[discord.Interaction, list[str], typing.Any]:
+    )                                                            :
         self.done = asyncio.Event()
         await self.done.wait()
         interaction, options, function_result = self.get_result()
@@ -433,10 +433,10 @@ class Dropdown(discord.ui.View):
 
     def get_result(
         self,
-    ) -> tuple[discord.Interaction, list[str], typing.Any]:
+    )                                                            :
         return self.interaction_result, self.options_result, self.function_result
 
-    async def callback(self, interaction: discord.Interaction) -> None:
+    async def callback(self, interaction                     )        :
         if self.members is not None and interaction.user.id not in self.members:
             await interaction.response.send_message(
                 "You are not allowed to use this interaction.",
@@ -465,7 +465,7 @@ class Dropdown(discord.ui.View):
 
 
 class _Select:
-    async def callback(self, interaction: discord.Interaction) -> None:
+    async def callback(self, interaction                     )        :
         if hasattr(self.view, "callback"):
             await self.view.callback(interaction)
         else:
@@ -475,15 +475,15 @@ class _Select:
 class Select(_Select, discord.ui.Select):
     def __init__(
         self,
-        placeholder: str = "Choose an option.",
-        min_values: int = 1,
-        max_values: int = 1,
+        placeholder             = "Choose an option.",
+        min_values             = 1,
+        max_values             = 1,
         *,
-        options: list = None,
-        disabled: bool = False,
-        custom_id: str = f"CogsUtils_{generate_key(length=10)}",
-        row: int = None,
-    ) -> None:
+        options              = None,
+        disabled              = False,
+        custom_id             = f"CogsUtils_{generate_key(length=10)}",
+        row             = None,
+    )        :
         if options is None:
             options = []
         super().__init__(
@@ -500,15 +500,15 @@ class Select(_Select, discord.ui.Select):
 class ChannelSelect(_Select, discord.ui.ChannelSelect):
     def __init__(
         self,
-        placeholder: str = "Choose a channel.",
-        min_values: int = 1,
-        max_values: int = 1,
+        placeholder             = "Choose a channel.",
+        min_values             = 1,
+        max_values             = 1,
         *,
-        channel_types: discord.ChannelType = None,
-        disabled: bool = False,
-        custom_id: str = f"CogsUtils_{generate_key(length=10)}",
-        row: int = None,
-    ) -> None:
+        channel_types                             = None,
+        disabled              = False,
+        custom_id             = f"CogsUtils_{generate_key(length=10)}",
+        row             = None,
+    )        :
         if channel_types is None:
             channel_types = []
         super().__init__(
@@ -525,14 +525,14 @@ class ChannelSelect(_Select, discord.ui.ChannelSelect):
 class MentionableSelect(_Select, discord.ui.MentionableSelect):
     def __init__(
         self,
-        placeholder: str = "Choose an option.",
-        min_values: int = 1,
-        max_values: int = 1,
+        placeholder             = "Choose an option.",
+        min_values             = 1,
+        max_values             = 1,
         *,
-        disabled: bool = False,
-        custom_id: str = f"CogsUtils_{generate_key(length=10)}",
-        row: int = None,
-    ) -> None:
+        disabled              = False,
+        custom_id             = f"CogsUtils_{generate_key(length=10)}",
+        row             = None,
+    )        :
         super().__init__(
             custom_id=custom_id,
             placeholder=placeholder,
@@ -546,14 +546,14 @@ class MentionableSelect(_Select, discord.ui.MentionableSelect):
 class RoleSelect(_Select, discord.ui.RoleSelect):
     def __init__(
         self,
-        placeholder: str = "Choose a role.",
-        min_values: int = 1,
-        max_values: int = 1,
+        placeholder             = "Choose a role.",
+        min_values             = 1,
+        max_values             = 1,
         *,
-        disabled: bool = False,
-        custom_id: str = f"CogsUtils_{generate_key(length=10)}",
-        row: int = None,
-    ) -> None:
+        disabled              = False,
+        custom_id             = f"CogsUtils_{generate_key(length=10)}",
+        row             = None,
+    )        :
         super().__init__(
             custom_id=custom_id,
             placeholder=placeholder,
@@ -567,14 +567,14 @@ class RoleSelect(_Select, discord.ui.RoleSelect):
 class UserSelect(_Select, discord.ui.UserSelect):
     def __init__(
         self,
-        placeholder: str = "Choose a user.",
-        min_values: int = 1,
-        max_values: int = 1,
+        placeholder             = "Choose a user.",
+        min_values             = 1,
+        max_values             = 1,
         *,
-        disabled: bool = False,
-        custom_id: str = f"CogsUtils_{generate_key(length=10)}",
-        row: int = None,
-    ) -> None:
+        disabled              = False,
+        custom_id             = f"CogsUtils_{generate_key(length=10)}",
+        row             = None,
+    )        :
         super().__init__(
             custom_id=custom_id,
             placeholder=placeholder,
@@ -590,15 +590,15 @@ class Modal(discord.ui.Modal):
 
     def __init__(
         self,
-        title: str = "Form",
-        timeout: float = None,
-        inputs: list = None,
-        members: typing.Iterable[discord.Member | int] = None,
-        check: typing.Callable = None,
-        function: typing.Callable = None,
-        function_kwargs: dict[str, typing.Any] = None,
-        custom_id: str = f"CogsUtils_{generate_key(length=10)}",
-    ) -> None:
+        title             = "Form",
+        timeout               = None,
+        inputs              = None,
+        members                                               = None,
+        check                         = None,
+        function                         = None,
+        function_kwargs                               = None,
+        custom_id             = f"CogsUtils_{generate_key(length=10)}",
+    )        :
         """label: str, style: TextStyle, custom_id: str, placeholder: Optional[str], default: Optional[str], required: bool, min_length: Optional[int], max_length: Optional[int], row: Optional[int]"""
         if inputs is None:
             inputs = [{}]
@@ -618,18 +618,18 @@ class Modal(discord.ui.Modal):
             "custom_id": custom_id,
         }
         super().__init__(title=title, timeout=timeout, custom_id=custom_id)
-        self.title: str = title
-        self.interaction_result: discord.Interaction = None
-        self.inputs_result: list[discord.ui.TextInput] = None
-        self.function_result: typing.Any = None
-        self.members: list[int] = (
+        self.title      = title
+        self.interaction_result                             = None
+        self.inputs_result                                    = None
+        self.function_result                    = None
+        self.members                   = (
             members if members is None else [getattr(member, "id", member) for member in members]
         )
-        self.check: typing.Callable = check
-        self.function: typing.Callable = function
-        self.function_kwargs: dict[str, typing.Any] = function_kwargs
-        self.inputs: list[discord.ui.TextInput] = []
-        self.inputs_dict: list[dict[str, typing.Any]] = []
+        self.check                         = check
+        self.function                         = function
+        self.function_kwargs                               = function_kwargs
+        self.inputs                             = []
+        self.inputs_dict                              = []
         for input_dict in inputs:
             if "label" not in input_dict:
                 input_dict["label"] = "Test"
@@ -639,12 +639,12 @@ class Modal(discord.ui.Modal):
             self.add_item(_input)
             self.inputs.append(_input)
             self.inputs_dict.append(input_dict)
-        self.done: asyncio.Event = asyncio.Event()
+        self.done                = asyncio.Event()
 
     def to_dict_cogsutils(
         self,
-        for_Config: bool = False,
-    ) -> dict[str, typing.Any]:
+        for_Config              = False,
+    )                         :
         modal_dict_instance = self.modal_dict_instance
         if for_Config:
             modal_dict_instance["members"] = None
@@ -655,14 +655,14 @@ class Modal(discord.ui.Modal):
     @classmethod
     def from_dict_cogsutils(
         cls,
-        modal_dict_instance: dict,
-    ) -> typing.Any:  # typing_extensions.Self
+        modal_dict_instance      ,
+    )              :  # typing_extensions.Self
         if "function_args" in modal_dict_instance:
             modal_dict_instance["function_kwargs"] = modal_dict_instance["function_args"]
             del modal_dict_instance["function_args"]
         return cls(**modal_dict_instance)
 
-    async def on_submit(self, interaction: discord.Interaction) -> None:
+    async def on_submit(self, interaction                     )        :
         if self.members is not None and interaction.user.id not in self.members:
             await interaction.response.send_message(
                 "You are not allowed to use this interaction.",
@@ -688,17 +688,17 @@ class Modal(discord.ui.Modal):
         self.stop()
         return None
 
-    async def on_timeout(self) -> None:
+    async def on_timeout(self)        :
         self.done.set()
         self.stop()
 
     async def wait_result(
         self,
-    ) -> tuple[
-        discord.Interaction,
-        list[discord.ui.TextInput],
-        typing.Any,
-    ]:
+    ):          
+                            
+                                   
+                          
+     
         self.done = asyncio.Event()
         await self.done.wait()
         interaction, inputs_result, function_result = self.get_result()
@@ -709,9 +709,9 @@ class Modal(discord.ui.Modal):
 
     def get_result(
         self,
-    ) -> tuple[
-        discord.Interaction,
-        list[discord.ui.TextInput],
-        typing.Any,
-    ]:
+    ):          
+                            
+                                   
+                          
+     
         return self.interaction_result, self.inputs_result, self.function_result

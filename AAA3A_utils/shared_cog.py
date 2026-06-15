@@ -40,15 +40,15 @@ from .sentry import SentryHelper
 __all__ = ["SharedCog"]
 
 
-def _(untranslated: str) -> str:
+def _(untranslated     )       :
     return untranslated
 
 
 def no_colour_rich_markup(
-    *objects: typing.Any,
-    lang: str = "",
-    no_box: bool = False,
-) -> str:
+    *objects            ,
+    lang      = "",
+    no_box              = False,
+)       :
     """
     Slimmed down version of rich_markup which ensure no colours (/ANSI) can exist
     https://github.com/Cog-Creators/Red-DiscordBot/pull/5538/files (Kowlin)
@@ -66,17 +66,17 @@ def no_colour_rich_markup(
 
 
 class StrConverter(commands.Converter):
-    async def convert(self, ctx: commands.Context, argument: str) -> str:
+    async def convert(self, ctx                  , argument     )       :
         return argument
 
 
 class SharedCog(Cog, name="AAA3A_utils"):
     """Commands to manage all the cogs in AAA3A-cogs repo!"""
 
-    def __init__(self, bot: Red) -> None:
+    def __init__(self, bot     )        :
         super().__init__(bot=bot)
 
-        self.config: Config = Config.get_conf(
+        self.config         = Config.get_conf(
             self,
             identifier=205192943327321000143939875896557571750,  # int(hashlib.md5(("AAA3A-cogs").encode()).hexdigest(), 16)
             force_registration=True,
@@ -89,36 +89,36 @@ class SharedCog(Cog, name="AAA3A_utils"):
             counted_cogs=[],
         )
 
-        self.sentry: SentryHelper = None
+        self.sentry               = None
 
-        self.senderrorwithsentry.__is_dev__: bool = True
-        self.displaysentrymanualcommand.__is_dev__: bool = True
-        self.telemetrywithsentry.__is_dev__: bool = True
-        self.getallfor.__is_dev__: bool = True
+        self.senderrorwithsentry.__is_dev__       = True
+        self.displaysentrymanualcommand.__is_dev__       = True
+        self.telemetrywithsentry.__is_dev__       = True
+        self.getallfor.__is_dev__       = True
 
-    async def cog_load(self) -> None:
+    async def cog_load(self)        :
         await super().cog_load()
         if self.sentry is None:
             self.sentry = SentryHelper(bot=self.bot, cog=self)
         cogsutils.replacement_var_paths = await self.config.replacement_var_paths()
         cog.tick_after_command_execution = await self.config.tick_after_command_execution()
 
-    async def red_delete_data_for_user(self, *args, **kwargs) -> None:
+    async def red_delete_data_for_user(self, *args, **kwargs)        :
         """Nothing to delete."""
         return
 
-    async def red_get_data_for_user(self, *args, **kwargs) -> dict[str, typing.Any]:
+    async def red_get_data_for_user(self, *args, **kwargs)                         :
         """Nothing to get."""
         return {}
 
     @commands.is_owner()
     @commands.hybrid_group(name="aaa3a_utils", aliases=["AAA3A_utils"], hidden=True)
-    async def AAA3A_utils(self, ctx: commands.Context) -> None:
+    async def AAA3A_utils(self, ctx                  )        :
         """All commands to manage all the cogs from AAA3A-cogs repo."""
         pass
 
     @AAA3A_utils.command()
-    async def getlogs(self, ctx: commands.Context, cog: str, level: str = "all") -> None:
+    async def getlogs(self, ctx                  , cog     , level      = "all")        :
         """Get logs for a cog from AAA3A-cogs"""
         cog = ctx.bot.get_cog(cog)
         if cog is None:
@@ -171,7 +171,7 @@ class SharedCog(Cog, name="AAA3A_utils"):
         await Menu(pages=result).start(ctx)
 
     @AAA3A_utils.command()
-    async def getdebugloopstatus(self, ctx: commands.Context, cog: str) -> None:
+    async def getdebugloopstatus(self, ctx                  , cog     )        :
         """Get debug loop status for a cog from AAA3A-cogs."""
         cog = ctx.bot.get_cog(cog)
         if cog is None:
@@ -184,10 +184,10 @@ class SharedCog(Cog, name="AAA3A_utils"):
     @AAA3A_utils.command(aliases=["clearconfig"])
     async def resetconfig(
         self,
-        ctx: commands.Context,
-        cog: str,
-        confirmation: bool = False,
-    ) -> None:
+        ctx                  ,
+        cog     ,
+        confirmation       = False,
+    )        :
         """Reset Config for a cog from AAA3A-cogs."""
         cog = ctx.bot.get_cog(cog)
         if cog is None:
@@ -197,7 +197,7 @@ class SharedCog(Cog, name="AAA3A_utils"):
         if not hasattr(cog, "config") or not isinstance(getattr(cog, "config"), Config):
             raise commands.UserFeedbackCheckFailure(_("This cog doesn't use the Config."))
         if not confirmation:
-            embed: discord.Embed = discord.Embed()
+            embed                = discord.Embed()
             embed.title = _("⚠️ - Reset Config")
             embed.description = _("Do you really want to remove ALL data saved with this cog?")
             embed.color = 0xF00020
@@ -207,7 +207,7 @@ class SharedCog(Cog, name="AAA3A_utils"):
         await getattr(cog, "config").clear_all()
 
     @AAA3A_utils.command(hidden=True)
-    async def telemetrywithsentry(self, ctx: commands.Context, state: bool) -> None:
+    async def telemetrywithsentry(self, ctx                  , state      )        :
         """Enable or disable Telemetry with Sentry for all cogs from AAA3A-cogs.
 
         More details: https://aaa3a-cogs.readthedocs.io/en/latest/repo_telemetry.html
@@ -219,7 +219,7 @@ class SharedCog(Cog, name="AAA3A_utils"):
         )
 
     @AAA3A_utils.command(hidden=True)
-    async def displaysentrymanualcommand(self, ctx: commands.Context, state: bool) -> None:
+    async def displaysentrymanualcommand(self, ctx                  , state      )        :
         """Enable or disable displaying the command `[p]AAA3A_utils senderrorwithsentry` in commands errors.
 
         Defaults is `True`.
@@ -228,7 +228,7 @@ class SharedCog(Cog, name="AAA3A_utils"):
         self.sentry.display_sentry_manual_command = not self.sentry.sentry_enabled and state
 
     @AAA3A_utils.command(hidden=True)
-    async def senderrorwithsentry(self, ctx: commands.Context, error: str) -> None:
+    async def senderrorwithsentry(self, ctx                  , error     )        :
         """Send a recent error to the developer of AAA3A's cogs with Sentry (use the code given when the error has been triggered).
 
         More details: https://aaa3a-cogs.readthedocs.io/en/latest/repo_telemetry.html
@@ -246,7 +246,7 @@ class SharedCog(Cog, name="AAA3A_utils"):
         )
 
     @AAA3A_utils.command()
-    async def replacementvarpaths(self, ctx: commands.Context, state: bool) -> None:
+    async def replacementvarpaths(self, ctx                  , state      )        :
         """Replace various var paths in texts sent by cog from AAA3A-cogs.
 
         Defaults is `True`.
@@ -255,7 +255,7 @@ class SharedCog(Cog, name="AAA3A_utils"):
         cogsutils.replacement_var_paths = state
 
     @AAA3A_utils.command()
-    async def tickaftercommandexecution(self, ctx: commands.Context, state: bool) -> None:
+    async def tickaftercommandexecution(self, ctx                  , state      )        :
         """Enable or disable sending a tick after each command from AAA3A-cogs.
 
         Defaults is `True`.
@@ -264,18 +264,18 @@ class SharedCog(Cog, name="AAA3A_utils"):
         cog.tick_after_command_execution = state
 
     @AAA3A_utils.command()
-    async def flags(self, ctx: commands.Context, *, content: str) -> None:
+    async def flags(self, ctx                  , *, content     )        :
         """Use any command with flags."""
-        msg: discord.Message = ctx.message
+        msg                  = ctx.message
         msg.content = (
             ctx.prefix
             if ctx.prefix != "/"
             else (await self.bot.get_valid_prefixes(guild=ctx.guild))[0]
         ) + content
-        context: commands.Context = await ctx.bot.get_context(msg)
+        context                   = await ctx.bot.get_context(msg)
         if context.command is None or not context.valid:
             raise commands.UserFeedbackCheckFailure(_("This command doen't exist."))
-        command: commands.Command = context.command
+        command                   = context.command
 
         async def _parse_arguments():
             context.args = [context] if command.cog is None else [command.cog, context]
@@ -371,10 +371,10 @@ class SharedCog(Cog, name="AAA3A_utils"):
     @commands.Cog.listener()
     async def on_command_error(
         self,
-        ctx: commands.Context,
-        error: commands.CommandError,
-        unhandled_by_cog: bool = False,
-    ) -> None:
+        ctx                  ,
+        error                       ,
+        unhandled_by_cog       = False,
+    )        :
         """
         Record all exceptions generated by commands by cog and by command in `bot.last_exceptions_cogs`.
         All my cogs will add this listener if it doesn't exist, so I need to record this in a common variable. Also, this may be useful to others.
@@ -421,14 +421,14 @@ class SharedCog(Cog, name="AAA3A_utils"):
     @AAA3A_utils.command()
     async def getallfor(
         self,
-        ctx: commands.Context,
-        all: typing.Literal["all", "ALL"] = None,
-        page: int = None,
-        repo: str = None,
-        check_updates: bool = False,
-        cog: InstalledCog = None,
-        command: str = None,
-    ) -> None:
+        ctx                  ,
+        all                                      = None,
+        page             = None,
+        repo      = None,
+        check_updates              = False,
+        cog                      = None,
+        command             = None,
+    )        :
         """Get all the necessary information to get support on a bot/repo/cog/command.
         With a html file.
         """
@@ -627,7 +627,7 @@ class SharedCog(Cog, name="AAA3A_utils"):
             diagnose_result.extend(issue_diagnoser._get_message_from_check_result(result))
             return diagnose_result
 
-        async def get_all_config(cog: commands.Cog):
+        async def get_all_config(cog              ):
             config = {}
             if not hasattr(cog, "config"):
                 return config

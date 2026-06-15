@@ -50,7 +50,7 @@ SENTRY_DSN = (
 # """
 
 
-def _(untranslated: str) -> str:
+def _(untranslated     )       :
     return untranslated
 
 
@@ -91,28 +91,25 @@ __all__ = ["SentryHelper"]
 
 
 class SentryHelper:
-    def __init__(self, bot: Red, cog: commands.Cog) -> None:
+    def __init__(self, bot     , cog              )        :
         if cog.qualified_name != "AAA3A_utils":
             raise ValueError(cog.qualified_name)
-        self.bot: Red = bot
-        self.cog: commands.Cog = cog
+        self.bot      = bot
+        self.cog               = cog
 
-        self.last_errors: dict[
-            str,
-            dict[str, commands.Context | Exception],
-        ] = {}
+        self.last_errors                                                                                     = {}
 
-        self.sentry_enabled: bool = None
-        self.display_sentry_manual_command: bool = None
-        self.send_reminders: bool = True
-        self.uuid: str = None
-        self.hubs: dict[str, sentry_sdk.Hub] = {}
 
-        self.config: Config = cog.config
-        self.sentry_global: dict[
-            str,
-            dict[str, int | bool | str | list[str]],
-        ] = {
+
+
+        self.sentry_enabled       = None
+        self.display_sentry_manual_command       = None
+        self.send_reminders       = True
+        self.uuid             = None
+        self.hubs                            = {}
+
+        self.config         = cog.config
+        self.sentry_global                                                                                            = {
             "sentry": {
                 "version": 1,
                 "sentry_enabled": False,
@@ -122,6 +119,9 @@ class SentryHelper:
                 "cogs_notified": [],
             },
         }
+
+
+
         self.config.register_global(**self.sentry_global)
 
         asyncio.create_task(self._async_init())
@@ -134,10 +134,10 @@ class SentryHelper:
             ),
         )
 
-        self.dont_send_reminders: bool = False
-        self.ready: asyncio.Event = asyncio.Event()
+        self.dont_send_reminders       = False
+        self.ready                = asyncio.Event()
 
-    async def _async_init(self) -> None:
+    async def _async_init(self)        :
         self.sentry_enabled = await self.config.sentry.sentry_enabled()
         self.display_sentry_manual_command = not self.sentry_enabled and (
             await self.config.sentry.display_sentry_manual_command()
@@ -150,7 +150,7 @@ class SentryHelper:
         self.uuid = uuid
         self.ready.set()
 
-    async def periodic_session_restart(self) -> None:
+    async def periodic_session_restart(self)        :
         if not self.sentry_enabled:
             return
         for hub in self.hubs.values():
@@ -159,10 +159,10 @@ class SentryHelper:
 
     async def send_command_error(
         self,
-        ctx: commands.Context,
-        error: commands.CommandError,
-        manually: bool = False,
-    ) -> str | bool:
+        ctx                  ,
+        error                       ,
+        manually              = False,
+    )                     :
         try:
             if ctx.cog is None:
                 return None
@@ -200,7 +200,7 @@ class SentryHelper:
             self.cog.logger.error("Sending an error to Sentry failed.", exc_info=e)
             return False
 
-    def remove_sensitive_data(self, event: dict, hint: dict = {}) -> dict:
+    def remove_sensitive_data(self, event      , hint              = {})        :
         """Remove sensitive data from the event. This should only be used by the Sentry SDK.
         This has two main parts:
         1) Remove any mentions of the bot's token
@@ -219,7 +219,7 @@ class SentryHelper:
             The event dict with above stated sensitive data removed.
         """
 
-        def regex_stuff(s: str) -> str:
+        def regex_stuff(s     )       :
             """Shorten any Discord IDs/snowflakes (basically any number 17-20 characters) to 4 digits
             by locating the timestamp and getting the last 4 digits - the milliseconds and the last
             digit of the second countsecond.
@@ -242,9 +242,9 @@ class SentryHelper:
             return re.sub(INVITE_URL_RE, "[DISCORD-INVITE-LINK]", s)
 
         def recursive_replace(
-            d: dict[str, typing.Any] | list | str,
-            token: str,
-        ) -> dict | str:
+            d                                    ,
+            token     ,
+        )              :
             """Recursively replace text in keys and values of a dictionary.
             Parameters
             ----------
@@ -285,7 +285,7 @@ class SentryHelper:
 
         return recursive_replace(event, token)  # type:ignore
 
-    async def enable_sentry(self) -> None:
+    async def enable_sentry(self)        :
         """Enable Sentry telemetry and error reporting."""
         await self.config.sentry.sentry_enabled.set(True)
         self.sentry_enabled = True
@@ -293,7 +293,7 @@ class SentryHelper:
         for hub in self.hubs.values():
             hub.start_session()
 
-    async def disable_sentry(self) -> None:
+    async def disable_sentry(self)        :
         """Enable Sentry telemetry and error reporting."""
         await self.config.sentry.sentry_enabled.set(False)
         self.sentry_enabled = False
@@ -304,9 +304,9 @@ class SentryHelper:
 
     async def get_sentry_hub(
         self,
-        cog: commands.Cog,
-        force: bool = False,
-    ) -> sentry_sdk.Hub:
+        cog              ,
+        force              = False,
+    )                  :
         """Get a Sentry Hub and Client for a DSN. Each cog should have it's own hub.
         Returns
         -------
@@ -356,7 +356,7 @@ class SentryHelper:
         hub.start_session()
         return hub
 
-    async def cog_unload(self, cog: commands.Cog) -> sentry_sdk.Hub:
+    async def cog_unload(self, cog              )                  :
         """Close the linked Sentry Hub.
         Returns
         -------
@@ -371,7 +371,7 @@ class SentryHelper:
         del self.hubs[cog.qualified_name]
         return hub
 
-    async def maybe_send_owners(self, cog: commands.Cog) -> None:
+    async def maybe_send_owners(self, cog              )        :
         if not self.ready.is_set():
             await self.ready.wait()
         if (

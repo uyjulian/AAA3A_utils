@@ -25,13 +25,13 @@ if typing.TYPE_CHECKING:
 
     from .loop import Loop
 
-SharedCog: commands.Cog = None
-tick_after_command_execution: bool = True
+SharedCog               = None
+tick_after_command_execution       = True
 
 __all__ = ["Cog"]
 
 
-def _(untranslated: str) -> str:
+def _(untranslated     )       :
     return untranslated
 
 
@@ -70,7 +70,7 @@ def _(untranslated: str) -> str:
 #             setattr(cog, attr, getattr(self, attr))
 
 
-async def unsupported(ctx: commands.Context) -> None:
+async def unsupported(ctx                  )        :
     """Thanks to Vexed for this (https://github.com/Vexed01/Vex-Cogs/blob/master/status/commands/statusdev_com.py#L33-L56)."""
     if is_dev(ctx.bot, ctx.author):
         return None
@@ -91,11 +91,11 @@ async def unsupported(ctx: commands.Context) -> None:
 
 
 class Cog(commands.Cog):
-    __authors__: list[str] = ["AAA3A"]
-    __version__: float = 1.0
-    __commit__: str = ""
-    __repo_name__: str = "AAA3A-cogs"
-    __utils_version__: float = __utils_version__
+    __authors__            = ["AAA3A"]
+    __version__        = 1.0
+    __commit__      = ""
+    __repo_name__      = "AAA3A-cogs"
+    __utils_version__        = __utils_version__
 
     # bot: Red
     # data_path: Path
@@ -114,39 +114,39 @@ class Cog(commands.Cog):
     # loops: typing.List[Loop]
     # views: typing.Dict[typing.Union[discord.Message, discord.PartialMessage, str], discord.ui.View]
 
-    def __init__(self, bot: Red) -> None:
-        self.bot: Red = bot
-        self.data_path: Path = cog_data_path(cog_instance=self)
+    def __init__(self, bot     )        :
+        self.bot      = bot
+        self.data_path       = cog_data_path(cog_instance=self)
 
-        self.logs: dict[
-            str,
-            list[
-                dict[
-                    str,
-                    datetime.datetime | int | str | tuple[typing.Any],
-                ]
-            ],
-        ] = {}
-        self.loops: list[Loop] = []
-        self.views: dict[
-            discord.Message | discord.PartialMessage | str,
-            discord.ui.View,
-        ] = {}  # `str` is for Views not linked to a message (in TicketTool for example).
+        self.logs                                                                                                                                                                                                           = {}
 
-    async def cog_load(self) -> None:
+
+
+
+
+
+
+
+        self.loops             = []
+        self.views                                                                                                        = {}  # `str` is for Views not linked to a message (in TicketTool for example).
+
+
+
+
+    async def cog_load(self)        :
         # Init logger.
-        self.logger: logging.Logger = CogsUtils.get_logger(cog=self)
+        self.logger                 = CogsUtils.get_logger(cog=self)
         # Prevent Red `(timeout)` error.
         asyncio.create_task(self.cog_load_new_task())
 
-    async def cog_load_new_task(self) -> None:
+    async def cog_load_new_task(self)        :
         # Wait until Red ready. But `(timeout)` when cog loading when bot starting...
         await self.bot.wait_until_red_ready()
         # Get cog version.
         try:
             nb_commits, version, commit = await CogsUtils.get_cog_version(bot=self.bot, cog=self)
-            self.__version__: float = version
-            self.__commit__: str = commit
+            self.__version__        = version
+            self.__commit__      = commit
         except (TimeoutError, RuntimeError, ValueError, TypeError):
             pass
         except Exception as e:  # Really doesn't matter if this fails, so fine with debug level.
@@ -216,7 +216,7 @@ class Cog(commands.Cog):
         # Modify hybrid commands.
         await CogsUtils.add_hybrid_commands(bot=self.bot, cog=self)
 
-    async def cog_unload(self) -> None:
+    async def cog_unload(self)        :
         # Close logger.
         CogsUtils.close_logger(self.logger)
         # Stop loops.
@@ -238,7 +238,7 @@ class Cog(commands.Cog):
                 pass
         self.views.clear()
         # Remove SharedCog.
-        AAA3A_utils: SharedCog = self.bot.get_cog("AAA3A_utils")
+        AAA3A_utils            = self.bot.get_cog("AAA3A_utils")
         if AAA3A_utils is not None:
             if AAA3A_utils.sentry is not None:
                 await AAA3A_utils.sentry.cog_unload(self)
@@ -249,7 +249,7 @@ class Cog(commands.Cog):
                     pass
                 await self.bot.remove_cog("AAA3A_utils")
 
-    def format_help_for_context(self, ctx: commands.Context) -> str:
+    def format_help_for_context(self, ctx                  )       :
         """Thanks Simbad!"""
         text = super().format_help_for_context(ctx)
         s = "s" if len(self.__authors__) > 1 else ""
@@ -269,15 +269,15 @@ class Cog(commands.Cog):
             )
         return text
 
-    async def red_delete_data_for_user(self, *args, **kwargs) -> None:
+    async def red_delete_data_for_user(self, *args, **kwargs)        :
         """Nothing to delete."""
         return
 
-    async def red_get_data_for_user(self, *args, **kwargs) -> dict[str, typing.Any]:
+    async def red_get_data_for_user(self, *args, **kwargs)                         :
         """Nothing to get."""
         return {}
 
-    async def cog_before_invoke(self, ctx: commands.Context) -> Context:
+    async def cog_before_invoke(self, ctx                  )           :
         if isinstance(ctx.command, commands.Group):
             view = ctx.view
             previous = view.index
@@ -287,7 +287,7 @@ class Cog(commands.Cog):
             view.index = previous
             if invoked_subcommand is not None or not ctx.command.invoke_without_command:
                 return None
-        context: commands.Context = await Context.from_context(ctx)
+        context                   = await Context.from_context(ctx)
         if getattr(ctx.command, "__is_dev__", False):
             await unsupported(ctx)
         if context.interaction is None:
@@ -299,7 +299,7 @@ class Cog(commands.Cog):
                 __do_call = getattr(context.command.app_command, "_do_call")
 
                 async def _do_call(interaction, params):
-                    context: commands.Context = await Context.from_context(interaction)
+                    context                   = await Context.from_context(interaction)
                     await __do_call(interaction=context, params=params)
 
                 setattr(context.command.app_command, "_do_call", _do_call)
@@ -326,12 +326,12 @@ class Cog(commands.Cog):
                 pass
         return context
 
-    async def cog_after_invoke(self, ctx: commands.Context) -> Context:
+    async def cog_after_invoke(self, ctx                  )           :
         if isinstance(ctx.command, commands.Group) and (
             ctx.invoked_subcommand is not None or not ctx.command.invoke_without_command
         ):
             return None
-        context: commands.Context = await Context.from_context(ctx)
+        context                   = await Context.from_context(ctx)
         if (
             hasattr(context, "_typing")
             and hasattr(context._typing, "task")
@@ -352,7 +352,7 @@ class Cog(commands.Cog):
         # await Menu(pages=str("\n".join([str((x.function, x.frame)) for x in __import__("inspect").stack(30)])), lang="py").start(context)
         return context
 
-    async def cog_command_error(self, ctx: commands.Context, error: Exception) -> None:
+    async def cog_command_error(self, ctx                  , error           )        :
         AAA3A_utils = ctx.bot.get_cog("AAA3A_utils")
         is_command_error = isinstance(
             error,
@@ -446,9 +446,9 @@ class Cog(commands.Cog):
 
 
 def verbose_forbidden_exception(
-    ctx: commands.Context,
-    error: discord.Forbidden,
-) -> commands.BotMissingPermissions:  # A little useless now.
+    ctx                  ,
+    error                   ,
+)                                  :  # A little useless now.
     if not isinstance(error, discord.Forbidden):
         return ValueError(error)
     method = error.response.request_info.method
@@ -636,9 +636,9 @@ def verbose_forbidden_exception(
     }
 
     class FakeObject:
-        id: str = "{snowflake}"
-        token: str = "{snowflake}"
-        code: str = "{snowflake}"
+        id      = "{snowflake}"
+        token      = "{snowflake}"
+        code      = "{snowflake}"
 
         def __str__(self):
             return "{snowflake}"
